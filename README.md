@@ -233,7 +233,7 @@ Contributions are welcome! Please ensure:
 
 ## License
 
-MIT License
+Apache License 2.0
 
 ## Support
 
