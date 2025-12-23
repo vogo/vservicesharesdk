@@ -1,0 +1,119 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+
+	"github.com/vogo/vservicesharesdk/examples/common"
+	"github.com/vogo/vservicesharesdk/freelancers"
+	"github.com/vogo/vservicesharesdk/payments"
+)
+
+func main() {
+	// Initialize client using environment variables
+	// Make sure to set SS_MERCHANT_ID, SS_AES_KEY, SS_PRIVATE_KEY, SS_PLATFORM_PUBLIC_KEY
+	client := common.CreateClient()
+	freelancerService := freelancers.NewService(client)
+	paymentService := payments.NewService(client)
+
+	// Define sign callback handler
+	http.HandleFunc("/callback/sign", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Read request body
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Failed to read body: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		// Parse callback
+		callback, err := freelancerService.ParseSignCallback(body)
+		if err != nil {
+			log.Printf("Failed to parse sign callback: %v", err)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"resCode":"9999", "resMsg":"Failed"}`))
+			return
+		}
+
+		fmt.Printf("Received Sign Callback:\n")
+		fmt.Printf("Flow ID: %s\n", callback.FlowId)
+		fmt.Printf("Contract ID: %s\n", callback.ContractId)
+		fmt.Printf("Status: %s\n", callback.Status)
+		fmt.Printf("Sign Time: %s\n", callback.SignTime)
+		if callback.ErrMsg != "" {
+			fmt.Printf("Error: %s\n", callback.ErrMsg)
+		}
+
+		// Return success response
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"resCode":"0000", "resMsg":"Success"}`))
+	})
+
+	// Define batch payment callback handler
+	http.HandleFunc("/callback/payment", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Read request body
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Failed to read body: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		// Parse callback
+		callback, err := paymentService.ParseBatchPaymentCallback(body)
+		if err != nil {
+			log.Printf("Failed to parse payment callback: %v", err)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"resCode":"9999", "resMsg":"Failed"}`))
+			return
+		}
+
+		fmt.Printf("Received Payment Callback:\n")
+		fmt.Printf("Batch ID: %s\n", callback.MerBatchId)
+		fmt.Printf("Items Count: %d\n", len(callback.QueryItems))
+		for i, item := range callback.QueryItems {
+			fmt.Printf("  Item %d: OrderNo=%s Amt=%d State=%d\n", i+1, item.OrderNo, item.Amt, item.State)
+		}
+
+		// Return success response
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"resCode":"0000", "resMsg":"Success"}`))
+	})
+
+	// Start server
+	fmt.Println("Server listening on :8080")
+	fmt.Println("Use POST /callback/contract for contract signing notifications")
+	fmt.Println("Use POST /callback/payment for batch payment notifications")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
+}

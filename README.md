@@ -114,9 +114,9 @@ resp, err := freelancerService.SilentSign(&freelancers.SilentSignRequest{
 // Asynchronous operation - check callback or use contract query
 ```
 
-**Contract Query (FunCode: 6011)**
+**Contract Status Query (FunCode: 6011)**
 ```go
-resp, err := freelancerService.QueryContract(&freelancers.ContractQueryRequest{
+resp, err := freelancerService.QuerySign(&freelancers.SignQueryRequest{
     Name:       "张三",
     IdCard:     "110101199001011234",
     Mobile:     "13800138000",
@@ -157,6 +157,34 @@ resp, err := paymentService.QueryBatchPayment(&payments.BatchPaymentQueryRequest
     // Omit QueryItems to get all orders
 })
 // resp.QueryItems[].State: 1=processing, 3=success, 4=failed, 6=pending, 7=cancelled
+```
+
+## Handling Notifications
+
+The SDK provides helpers to handle asynchronous callbacks from the platform.
+
+### Contract Signing Notification (FunCode: 6010/5.1.4)
+```go
+// In your HTTP handler
+body, _ := io.ReadAll(r.Body)
+callback, err := freelancerService.ParseSignCallback(body)
+if err != nil {
+    // Handle error
+    return
+}
+fmt.Printf("Sign Result: ContractID=%s Status=%s\n", callback.ContractId, callback.Status)
+```
+
+### Batch Payment Notification (FunCode: 6001/5.3.4)
+```go
+// In your HTTP handler
+body, _ := io.ReadAll(r.Body)
+callback, err := paymentService.ParseBatchPaymentCallback(body)
+if err != nil {
+    // Handle error
+    return
+}
+fmt.Printf("Batch Payment: BatchID=%s Items=%d\n", callback.MerBatchId, len(callback.QueryItems))
 ```
 
 ## Error Handling

@@ -33,28 +33,28 @@ func main() {
 	// Create freelancers service
 	freelancerService := freelancers.NewService(client)
 
-	// Query contract status
-	resp, err := freelancerService.QueryContract(&freelancers.ContractQueryRequest{
+	// Query sign status
+	resp, err := freelancerService.QuerySign(&freelancers.SignQueryRequest{
 		Name:       vos.EnvString("SS_FREELANCER_NAME"),
 		IdCard:     vos.EnvString("SS_FREELANCER_ID_CARD"),
 		Mobile:     vos.EnvString("SS_FREELANCER_MOBILE"),
 		ProviderId: vos.EnvString("SS_PROVIDER_ID"),
 	})
 	if err != nil {
-		log.Fatalf("Failed to query contract: %v", err)
+		log.Fatalf("Failed to query sign: %v", err)
 	}
 
-	// Display contract status
-	stateNames := map[freelancers.ContractState]string{
-		freelancers.ContractStateUnsigned:  "Unsigned",
-		freelancers.ContractStateSigned:    "Signed",
-		freelancers.ContractStateNotFound:  "Not Found",
-		freelancers.ContractStatePending:   "Pending",
-		freelancers.ContractStateFailed:    "Failed",
-		freelancers.ContractStateCancelled: "Cancelled",
+	// Display sign status
+	stateNames := map[freelancers.SignState]string{
+		freelancers.SignStateUnsigned:  "Unsigned",
+		freelancers.SignStateSigned:    "Signed",
+		freelancers.SignStateNotFound:  "Not Found",
+		freelancers.SignStatePending:   "Pending",
+		freelancers.SignStateFailed:    "Failed",
+		freelancers.SignStateCancelled: "Cancelled",
 	}
 
-	fmt.Printf("Contract Query Result:\n")
+	fmt.Printf("Sign Query Result:\n")
 	fmt.Printf("  Name: %s\n", resp.Name)
 	fmt.Printf("  ID Card: %s\n", resp.IdCard)
 	fmt.Printf("  Mobile: %s\n", resp.Mobile)

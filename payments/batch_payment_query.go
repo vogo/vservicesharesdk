@@ -62,39 +62,6 @@ type BatchPaymentQueryRequest struct {
 	QueryItems []QueryItem `json:"queryItems,omitempty"`
 }
 
-// PaymentQueryResult represents the detailed result of a payment query.
-type PaymentQueryResult struct {
-	// MerOrderId is the merchant order ID
-	MerOrderId string `json:"merOrderId"`
-
-	// OrderNo is the platform order number (use as primary transaction identifier)
-	OrderNo string `json:"orderNo"`
-
-	// State is the payment state
-	State PaymentState `json:"state"`
-
-	// Amt is the payment amount in fen
-	Amt int64 `json:"amt"`
-
-	// Fee is the service fee in fen
-	Fee int64 `json:"fee"`
-
-	// UserFee is the user's fee in fen
-	UserFee int64 `json:"userFee"`
-
-	// Tax is the tax amount in fen
-	Tax int64 `json:"tax"`
-
-	// UserDueAmt is the amount due to user in fen
-	UserDueAmt int64 `json:"userDueAmt"`
-
-	// ResCode is the result code
-	ResCode string `json:"resCode"`
-
-	// ResMsg is the result message
-	ResMsg string `json:"resMsg"`
-}
-
 // BatchPaymentQueryResponse represents the response for batch payment query.
 type BatchPaymentQueryResponse struct {
 	// MerId is the merchant ID

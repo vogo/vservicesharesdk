@@ -183,3 +183,35 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 
 	return decryptedData, nil
 }
+
+// VerifyAndDecryptNotification verifies the signature and decrypts the notification data.
+// It accepts the raw JSON body of the notification request.
+func (c *Client) VerifyAndDecryptNotification(body []byte) (string, error) {
+	// 1. Parse request message
+	var reqMsg RequestMessage
+	if err := json.Unmarshal(body, &reqMsg); err != nil {
+		return "", fmt.Errorf("failed to unmarshal notification envelope: %w", err)
+	}
+
+	// 2. Verify signature
+	// The notification is signed by the platform, so we verify with the platform's public key.
+	if reqMsg.Sign == "" {
+		return "", fmt.Errorf("missing signature in notification")
+	}
+	// Note: The signature is generated based on the encrypted ReqData
+	if err := Verify(reqMsg.ReqData, reqMsg.Sign, c.publicKey); err != nil {
+		return "", fmt.Errorf("notification signature verification failed: %w", err)
+	}
+
+	// 3. Decrypt data
+	if reqMsg.ReqData == "" {
+		return "", nil
+	}
+
+	decryptedData, err := DecryptAES(reqMsg.ReqData, c.config.AesKey)
+	if err != nil {
+		return "", fmt.Errorf("failed to decrypt notification data: %w", err)
+	}
+
+	return decryptedData, nil
+}

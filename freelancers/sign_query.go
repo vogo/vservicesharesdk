@@ -23,30 +23,30 @@ import (
 )
 
 const (
-	// FunCodeContractQuery is the function code for contract status query API
-	FunCodeContractQuery = "6011"
+	// FunCodeSignQuery is the function code for contract status query API
+	FunCodeSignQuery = "6011"
 )
 
-// ContractState represents the contract status.
-type ContractState int
+// SignState represents the sign status.
+type SignState int
 
 const (
-	// ContractStateUnsigned indicates the freelancer has not signed
-	ContractStateUnsigned ContractState = 0
-	// ContractStateSigned indicates the freelancer has signed
-	ContractStateSigned ContractState = 1
-	// ContractStateNotFound indicates the freelancer record was not found
-	ContractStateNotFound ContractState = 2
-	// ContractStatePending indicates the contract is pending
-	ContractStatePending ContractState = 3
-	// ContractStateFailed indicates the contract signing failed
-	ContractStateFailed ContractState = 4
-	// ContractStateCancelled indicates the contract was cancelled
-	ContractStateCancelled ContractState = 5
+	// SignStateUnsigned indicates the freelancer has not signed
+	SignStateUnsigned SignState = 0
+	// SignStateSigned indicates the freelancer has signed
+	SignStateSigned SignState = 1
+	// SignStateNotFound indicates the freelancer record was not found
+	SignStateNotFound SignState = 2
+	// SignStatePending indicates the sign is pending
+	SignStatePending SignState = 3
+	// SignStateFailed indicates the sign failed
+	SignStateFailed SignState = 4
+	// SignStateCancelled indicates the sign was cancelled
+	SignStateCancelled SignState = 5
 )
 
-// ContractQueryRequest represents the request for querying freelancer contract status.
-type ContractQueryRequest struct {
+// SignQueryRequest represents the request for querying freelancer sign status.
+type SignQueryRequest struct {
 	// Name is the freelancer's name (required, max 25 chars)
 	Name string `json:"name"`
 
@@ -60,8 +60,8 @@ type ContractQueryRequest struct {
 	ProviderId string `json:"providerId"`
 }
 
-// ContractQueryResponse represents the response for contract query.
-type ContractQueryResponse struct {
+// SignQueryResponse represents the response for contract query.
+type SignQueryResponse struct {
 	// Name is the freelancer's name
 	Name string `json:"name"`
 
@@ -74,9 +74,8 @@ type ContractQueryResponse struct {
 	// Mobile is the phone number
 	Mobile string `json:"mobile"`
 
-	// State is the contract status
-	// 0: unsigned, 1: signed, 2: not found, 3: pending, 4: failed, 5: cancelled
-	State ContractState `json:"state"`
+	// State is the sign status
+	State SignState `json:"state"`
 
 	// ProviderId is the service provider ID
 	ProviderId string `json:"providerId"`
@@ -85,10 +84,10 @@ type ContractQueryResponse struct {
 	RetMsg string `json:"retMsg,omitempty"`
 }
 
-// QueryContract queries the contract status of a freelancer.
+// QuerySign queries the sign status of a freelancer.
 //
-// Note: After changing bank cards, no need to re-contract.
-func (s *Service) QueryContract(req *ContractQueryRequest) (*ContractQueryResponse, error) {
+// Note: After changing bank cards, no need to re-sign.
+func (s *Service) QuerySign(req *SignQueryRequest) (*SignQueryResponse, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -107,7 +106,7 @@ func (s *Service) QueryContract(req *ContractQueryRequest) (*ContractQueryRespon
 	}
 
 	// Call API with function code 6011
-	respData, err := s.client.Do(FunCodeContractQuery, req)
+	respData, err := s.client.Do(FunCodeSignQuery, req)
 	if err != nil {
 		return nil, fmt.Errorf("query contract failed: %w", err)
 	}
@@ -118,7 +117,7 @@ func (s *Service) QueryContract(req *ContractQueryRequest) (*ContractQueryRespon
 	}
 
 	// Unmarshal decrypted response
-	var resp ContractQueryResponse
+	var resp SignQueryResponse
 	if err := json.Unmarshal([]byte(respData), &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
