@@ -33,8 +33,8 @@ type Config struct {
 	// Version is the API version (default: "V1.0")
 	Version string
 
-	// AesKey is the AES-256 encryption key (32 bytes)
-	AesKey string
+	// DesKey is the DES encryption key (uses first 8 bytes)
+	DesKey string
 
 	// PrivateKey is the merchant's RSA private key in PEM format
 	PrivateKey string
@@ -47,12 +47,12 @@ type Config struct {
 }
 
 // NewConfig creates a new Config with default values.
-func NewConfig(baseURL, merchantID, aesKey, privateKey, platformPublicKey string) *Config {
+func NewConfig(baseURL, merchantID, desKey, privateKey, platformPublicKey string) *Config {
 	return &Config{
 		BaseURL:           baseURL,
 		MerchantID:        merchantID,
 		Version:           "V1.0",
-		AesKey:            aesKey,
+		DesKey:            desKey,
 		PrivateKey:        privateKey,
 		PlatformPublicKey: platformPublicKey,
 		Timeout:           60 * time.Second,
@@ -67,11 +67,11 @@ func (c *Config) Validate() error {
 	if c.MerchantID == "" {
 		return fmt.Errorf("%w: MerchantID is required", ErrInvalidConfig)
 	}
-	if c.AesKey == "" {
-		return fmt.Errorf("%w: AesKey is required", ErrInvalidConfig)
+	if c.DesKey == "" {
+		return fmt.Errorf("%w: DesKey is required", ErrInvalidConfig)
 	}
-	if len(c.AesKey) != 32 {
-		return fmt.Errorf("%w: AesKey must be exactly 32 bytes", ErrInvalidConfig)
+	if len(c.DesKey) < 8 {
+		return fmt.Errorf("%w: DesKey must be at least 8 bytes", ErrInvalidConfig)
 	}
 	if c.PrivateKey == "" {
 		return fmt.Errorf("%w: PrivateKey is required", ErrInvalidConfig)

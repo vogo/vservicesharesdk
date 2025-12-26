@@ -57,7 +57,7 @@ type SignQueryRequest struct {
 	Mobile string `json:"mobile"`
 
 	// ProviderId is the service provider ID (required, max 5 digits)
-	ProviderId string `json:"providerId"`
+	ProviderId int64 `json:"providerId"`
 }
 
 // SignQueryResponse represents the response for contract query.
@@ -78,7 +78,7 @@ type SignQueryResponse struct {
 	State SignState `json:"state"`
 
 	// ProviderId is the service provider ID
-	ProviderId string `json:"providerId"`
+	ProviderId int64 `json:"providerId"`
 
 	// RetMsg is the failure reason if applicable
 	RetMsg string `json:"retMsg,omitempty"`
@@ -101,7 +101,7 @@ func (s *Service) QuerySign(req *SignQueryRequest) (*SignQueryResponse, error) {
 	if req.Mobile == "" {
 		return nil, fmt.Errorf("mobile is required")
 	}
-	if req.ProviderId == "" {
+	if req.ProviderId == 0 {
 		return nil, fmt.Errorf("providerId is required")
 	}
 

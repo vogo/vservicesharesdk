@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package main
+package examples
 
 import (
 	"fmt"
 	"log"
+	"testing"
 
 	"github.com/vogo/vogo/vos"
 	"github.com/vogo/vservicesharesdk/cores"
-	"github.com/vogo/vservicesharesdk/examples/common"
 	"github.com/vogo/vservicesharesdk/freelancers"
 )
 
-func main() {
+func TestSilentSign(t *testing.T) {
 	// Create client from environment variables
-	client := common.CreateClient()
+	client := CreateClient()
 
 	// Create freelancers service
 	freelancerService := freelancers.NewService(client)
@@ -41,7 +41,7 @@ func main() {
 		IdCard:      vos.EnvString("SS_FREELANCER_ID_CARD"),
 		Mobile:      vos.EnvString("SS_FREELANCER_MOBILE"),
 		PaymentType: cores.PaymentTypeBankCard, // 0=Bank, 1=Alipay, 2=WeChat
-		ProviderId:  vos.EnvString("SS_PROVIDER_ID"),
+		ProviderId:  vos.EnvInt64("SS_PROVIDER_ID"),
 		IdCardPic1:  vos.EnvString("SS_ID_CARD_FRONT_HEX"), // ID front photo in hex format
 		IdCardPic2:  vos.EnvString("SS_ID_CARD_BACK_HEX"),  // ID back photo in hex format
 		NotifyUrl:   vos.EnvString("SS_NOTIFY_URL"),        // Optional callback URL

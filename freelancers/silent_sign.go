@@ -48,7 +48,7 @@ type SilentSignRequest struct {
 	PaymentType cores.PaymentType `json:"paymentType"`
 
 	// ProviderId is the service provider ID (required, max 20 chars)
-	ProviderId string `json:"providerId"`
+	ProviderId int64 `json:"providerId"`
 
 	// IdCardPic1 is the ID card front photo in hex format (required)
 	IdCardPic1 string `json:"idCardPic1"`
@@ -95,7 +95,7 @@ func (s *Service) SilentSign(req *SilentSignRequest) (*SilentSignResponse, error
 	if req.Mobile == "" {
 		return nil, fmt.Errorf("mobile is required")
 	}
-	if req.ProviderId == "" {
+	if req.ProviderId == 0 {
 		return nil, fmt.Errorf("providerId is required")
 	}
 	if req.IdCardPic1 == "" {

@@ -19,19 +19,20 @@ package cores
 
 import (
 	"bytes"
-	"crypto/aes"
+	"crypto/des"
 	"encoding/base64"
 	"fmt"
 )
 
-// EncryptAES encrypts plaintext using AES-256-ECB mode with PKCS5 padding.
-// Returns Base64-encoded ciphertext.
-func EncryptAES(plaintext, key string) (string, error) {
-	if len(key) != 32 {
-		return "", fmt.Errorf("%w: AES-256 key must be 32 bytes", ErrEncryptionFailed)
+// EncryptDES encrypts plaintext using DES-ECB mode with PKCS5 padding.
+// Returns Hex-encoded ciphertext (uppercase).
+func EncryptDES(plaintext, key string) (string, error) {
+	if len(key) < 8 {
+		return "", fmt.Errorf("%w: DES key must be at least 8 bytes", ErrEncryptionFailed)
 	}
 
-	block, err := aes.NewCipher([]byte(key))
+	// Use first 8 bytes of key
+	block, err := des.NewCipher([]byte(key)[:8])
 	if err != nil {
 		return "", fmt.Errorf("%w: %v", ErrEncryptionFailed, err)
 	}
@@ -47,15 +48,15 @@ func EncryptAES(plaintext, key string) (string, error) {
 		block.Encrypt(ciphertext[i:i+blockSize], paddedData[i:i+blockSize])
 	}
 
-	// Base64 encode the result
+	// Hex encode the result (uppercase to match Java implementation often)
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-// DecryptAES decrypts Base64-encoded ciphertext using AES-256-ECB mode.
+// DecryptDES decrypts Hex-encoded ciphertext using DES-ECB mode.
 // Returns plaintext after removing PKCS5 padding.
-func DecryptAES(ciphertext, key string) (string, error) {
-	if len(key) != 32 {
-		return "", fmt.Errorf("%w: AES-256 key must be 32 bytes", ErrDecryptionFailed)
+func DecryptDES(ciphertext, key string) (string, error) {
+	if len(key) < 8 {
+		return "", fmt.Errorf("%w: DES key must be at least 8 bytes", ErrDecryptionFailed)
 	}
 
 	// Base64 decode
@@ -64,7 +65,8 @@ func DecryptAES(ciphertext, key string) (string, error) {
 		return "", fmt.Errorf("%w: invalid base64: %v", ErrDecryptionFailed, err)
 	}
 
-	block, err := aes.NewCipher([]byte(key))
+	// Use first 8 bytes of key
+	block, err := des.NewCipher([]byte(key)[:8])
 	if err != nil {
 		return "", fmt.Errorf("%w: %v", ErrDecryptionFailed, err)
 	}

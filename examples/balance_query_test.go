@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package main
+package examples
 
 import (
 	"fmt"
 	"log"
+	"testing"
 
 	"github.com/vogo/vogo/vos"
 	"github.com/vogo/vservicesharesdk/accounts"
 	"github.com/vogo/vservicesharesdk/cores"
-	"github.com/vogo/vservicesharesdk/examples/common"
 )
 
-func main() {
+func TestBalanceQuery(t *testing.T) {
 	// Create client from environment variables
-	client := common.CreateClient()
+	client := CreateClient()
 
 	// Create accounts service
 	accountService := accounts.NewService(client)
 
 	// Query balance
 	resp, err := accountService.QueryBalance(&accounts.BalanceQueryRequest{
-		ProviderID:  vos.EnvString("SS_PROVIDER_ID"),
+		ProviderID:  vos.EnvInt64("SS_PROVIDER_ID"),
 		PaymentType: cores.PaymentTypeBankCard, // Optional: 0=Bank, 1=Alipay, 2=WeChat
 	})
 	if err != nil {
@@ -44,11 +44,10 @@ func main() {
 	}
 
 	// Parse balance from fen to yuan
-	var balanceFen int64
-	fmt.Sscanf(resp.Balance, "%d", &balanceFen)
+	var balanceFen int64 = resp.Balance
 	balanceYuan := float64(balanceFen) / 100.0
 
 	fmt.Printf("Account Balance Query Result:\n")
-	fmt.Printf("  Provider ID: %s\n", resp.ProviderID)
-	fmt.Printf("  Balance: %s fen (%.2f CNY)\n", resp.Balance, balanceYuan)
+	fmt.Printf("  Provider ID: %d\n", resp.ProviderID)
+	fmt.Printf("  Balance: %d fen (%.2f CNY)\n", balanceFen, balanceYuan)
 }

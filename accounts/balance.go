@@ -32,7 +32,7 @@ const (
 // BalanceQueryRequest represents the request for querying account balance.
 type BalanceQueryRequest struct {
 	// ProviderID is the service provider ID (required)
-	ProviderID string `json:"providerId"`
+	ProviderID int64 `json:"providerId"`
 
 	// PaymentType is the account type (optional)
 	// 0 = Bank Card, 1 = Alipay, 2 = WeChat
@@ -43,10 +43,10 @@ type BalanceQueryRequest struct {
 type BalanceQueryResponse struct {
 	// Balance is the account balance in fen (分)
 	// Note: 1 yuan = 100 fen
-	Balance string `json:"balance"`
+	Balance int64 `json:"balance"`
 
 	// ProviderID is the service provider ID
-	ProviderID string `json:"providerId"`
+	ProviderID int64 `json:"providerId"`
 }
 
 // QueryBalance queries the merchant account balance.
@@ -55,7 +55,7 @@ func (s *Service) QueryBalance(req *BalanceQueryRequest) (*BalanceQueryResponse,
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
 	}
-	if req.ProviderID == "" {
+	if req.ProviderID == 0 {
 		return nil, fmt.Errorf("providerId is required")
 	}
 

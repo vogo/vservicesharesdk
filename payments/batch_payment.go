@@ -72,7 +72,7 @@ type BatchPaymentRequest struct {
 	TaskId int `json:"taskId"`
 
 	// ProviderId is the service provider ID (required)
-	ProviderId string `json:"providerId"`
+	ProviderId int64 `json:"providerId"`
 }
 
 // PaymentResult represents the result of a single payment order.
@@ -129,7 +129,7 @@ func (s *Service) BatchPayment(req *BatchPaymentRequest) (*BatchPaymentResponse,
 	if len(req.PayItems) == 0 {
 		return nil, fmt.Errorf("payItems cannot be empty")
 	}
-	if req.ProviderId == "" {
+	if req.ProviderId == 0 {
 		return nil, fmt.Errorf("providerId is required")
 	}
 

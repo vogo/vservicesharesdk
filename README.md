@@ -4,7 +4,7 @@ Go SDK for ServiceShare (佣金保) API integration.
 
 ## Features
 
-- Secure AES-256-ECB encryption for request/response data
+- Secure DES-ECB encryption for request/response data
 - RSA-SHA1 signing for request authentication
 - Complete API coverage:
   - Account balance query (6003)
@@ -29,7 +29,7 @@ go get github.com/vogo/vservicesharesdk
 config := cores.NewConfig(
     "http://testgateway.serviceshare.com/testapi/clientapi/clientBusiness/common",
     "YOUR_MERCHANT_ID",
-    "12345678901234567890123456789012", // 32-byte AES-256 key
+    "12345678901234567890123456789012", // DES key (uses first 8 bytes)
     "YOUR_RSA_PRIVATE_KEY",              // PEM format or raw base64
     "YOUR_PLATFORM_PUBLIC_KEY",          // PEM format or raw base64
 )
@@ -60,7 +60,7 @@ fmt.Printf("Balance: %s fen\n", resp.Balance)
 |-----------|------|----------|-------------|
 | `BaseURL` | string | Yes | API endpoint URL |
 | `MerchantID` | string | Yes | Merchant ID from platform |
-| `AesKey` | string | Yes | AES-256 encryption key (32 bytes) |
+| `DesKey` | string | Yes | DES encryption key (uses first 8 bytes) |
 | `PrivateKey` | string | Yes | Merchant RSA private key (PEM or raw base64) |
 | `PlatformPublicKey` | string | Yes | Platform RSA public key (PEM or raw base64) |
 | `Version` | string | No | API version (default: "V1.0") |
@@ -214,7 +214,7 @@ if err != nil {
 config := cores.NewConfig(
     os.Getenv("SS_API_URL"),
     os.Getenv("SS_MERCHANT_ID"),
-    os.Getenv("SS_AES_KEY"),
+    os.Getenv("SS_DES_KEY"),
     os.Getenv("SS_PRIVATE_KEY"),
     os.Getenv("SS_PLATFORM_PUBLIC_KEY"),
 )
@@ -226,7 +226,7 @@ config := cores.NewConfig(
 vservicesharesdk/
 ├── cores/          # Core SDK functionality
 │   ├── client.go   # HTTP client with encryption/signing
-│   ├── crypto.go   # AES-256 encryption/decryption
+│   ├── crypto.go   # DES encryption/decryption
 │   ├── sign.go     # RSA signing/verification
 │   ├── consts.go   # Constants (PaymentType, etc.)
 │   └── errors.go   # Error types
@@ -239,11 +239,11 @@ vservicesharesdk/
 ### Request Flow
 
 1. Marshal request data to JSON
-2. Encrypt JSON with AES-256
+2. Encrypt JSON with DES
 3. Sign encrypted data with RSA private key
 4. Send HTTP POST with encrypted + signed payload
 5. Verify response signature with platform public key
-6. Decrypt response data with AES-256
+6. Decrypt response data with DES
 7. Return typed response
 
 ## Testing

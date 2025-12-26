@@ -89,10 +89,11 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 		return "", fmt.Errorf("failed to marshal request data: %w", err)
 	}
 
-	vlog.Infof("service share api request | funCode: %s | reqId: %s | reqData: %s", funCode, reqId, string(reqDataJSON))
+	vlog.Infof("service share api request | merchantId: %s | funCode: %s | reqId: %s  | url: %s | reqData: %s",
+		c.config.MerchantID, funCode, reqId, c.config.BaseURL, string(reqDataJSON))
 
-	// 3. Encrypt request data with AES
-	encryptedData, err := EncryptAES(string(reqDataJSON), c.config.AesKey)
+	// 3. Encrypt request data with DES
+	encryptedData, err := EncryptDES(string(reqDataJSON), c.config.DesKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to encrypt request data: %w", err)
 	}
@@ -142,17 +143,20 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 
 	// Check HTTP status
 	if resp.StatusCode != http.StatusOK {
-		vlog.Errorf("service share api response not ok | funCode: %s | reqId: %s | status_code: %d | respBody: %s", funCode, reqId, resp.StatusCode, string(respBody))
+		vlog.Errorf("service share api response not ok | merchantId: %s | funCode: %s | reqId: %s | status_code: %d | respBody: %s",
+			c.config.MerchantID, funCode, reqId, resp.StatusCode, string(respBody))
 
 		return "", fmt.Errorf("%w: HTTP %d", ErrRequestFailed, resp.StatusCode)
 	}
 
-	vlog.Infof("service share api response | funCode: %s | reqId: %s | respBody: %s", funCode, reqId, string(respBody))
+	vlog.Infof("service share api response | merchantId: %s | funCode: %s | reqId: %s | respBody: %s",
+		c.config.MerchantID, funCode, reqId, string(respBody))
 
 	// 9. Parse response message
 	responseMsg, err := ParseResponseMessage(respBody)
 	if err != nil {
-		vlog.Errorf("service share api response parse failed | funCode: %s | reqId: %s | respBody: %s | err: %v", funCode, reqId, string(respBody), err)
+		vlog.Errorf("service share api response parse failed | merchantId: %s | funCode: %s | reqId: %s | respBody: %s | err: %v",
+			c.config.MerchantID, funCode, reqId, string(respBody), err)
 
 		return "", fmt.Errorf("%w: %v", ErrInvalidResponse, err)
 	}
@@ -174,7 +178,7 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 		return "", nil
 	}
 
-	decryptedData, err := DecryptAES(responseMsg.ResData, c.config.AesKey)
+	decryptedData, err := DecryptDES(responseMsg.ResData, c.config.DesKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to decrypt response data: %w", err)
 	}
@@ -208,7 +212,7 @@ func (c *Client) VerifyAndDecryptNotification(body []byte) (string, error) {
 		return "", nil
 	}
 
-	decryptedData, err := DecryptAES(reqMsg.ReqData, c.config.AesKey)
+	decryptedData, err := DecryptDES(reqMsg.ReqData, c.config.DesKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to decrypt notification data: %w", err)
 	}

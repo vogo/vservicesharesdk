@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package main
+package examples
 
 import (
 	"fmt"
 	"log"
+	"testing"
 
 	"github.com/vogo/vogo/vos"
-	"github.com/vogo/vservicesharesdk/examples/common"
 	"github.com/vogo/vservicesharesdk/freelancers"
 )
 
-func main() {
+func TestSignQuery(t *testing.T) {
 	// Create client from environment variables
-	client := common.CreateClient()
+	client := CreateClient()
 
 	// Create freelancers service
 	freelancerService := freelancers.NewService(client)
@@ -38,7 +38,7 @@ func main() {
 		Name:       vos.EnvString("SS_FREELANCER_NAME"),
 		IdCard:     vos.EnvString("SS_FREELANCER_ID_CARD"),
 		Mobile:     vos.EnvString("SS_FREELANCER_MOBILE"),
-		ProviderId: vos.EnvString("SS_PROVIDER_ID"),
+		ProviderId: vos.EnvInt64("SS_PROVIDER_ID"),
 	})
 	if err != nil {
 		log.Fatalf("Failed to query sign: %v", err)
@@ -59,7 +59,7 @@ func main() {
 	fmt.Printf("  ID Card: %s\n", resp.IdCard)
 	fmt.Printf("  Mobile: %s\n", resp.Mobile)
 	fmt.Printf("  Card No: %s\n", resp.CardNo)
-	fmt.Printf("  Provider ID: %s\n", resp.ProviderId)
+	fmt.Printf("  Provider ID: %d\n", resp.ProviderId)
 	fmt.Printf("  State: %s (%d)\n", stateNames[resp.State], resp.State)
 	if resp.RetMsg != "" {
 		fmt.Printf("  Message: %s\n", resp.RetMsg)

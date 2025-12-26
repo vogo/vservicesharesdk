@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package main
+package examples
 
 import (
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"testing"
 
-	"github.com/vogo/vservicesharesdk/examples/common"
 	"github.com/vogo/vservicesharesdk/freelancers"
 	"github.com/vogo/vservicesharesdk/payments"
 )
 
-func main() {
+func TestCallback(t *testing.T) {
 	// Initialize client using environment variables
-	// Make sure to set SS_MERCHANT_ID, SS_AES_KEY, SS_PRIVATE_KEY, SS_PLATFORM_PUBLIC_KEY
-	client := common.CreateClient()
+	// Make sure to set SS_MERCHANT_ID, SS_DES_KEY, SS_PRIVATE_KEY, SS_PLATFORM_PUBLIC_KEY
+	client := CreateClient()
 	freelancerService := freelancers.NewService(client)
 	paymentService := payments.NewService(client)
 

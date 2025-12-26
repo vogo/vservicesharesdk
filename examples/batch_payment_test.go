@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package main
+package examples
 
 import (
 	"fmt"
 	"log"
+	"testing"
 	"time"
 
 	"github.com/vogo/vogo/vos"
 	"github.com/vogo/vservicesharesdk/cores"
-	"github.com/vogo/vservicesharesdk/examples/common"
 	"github.com/vogo/vservicesharesdk/payments"
 )
 
-func main() {
+func TestBatchPayment(t *testing.T) {
 	// Create client from environment variables
-	client := common.CreateClient()
+	client := CreateClient()
 
 	// Create payments service
 	paymentService := payments.NewService(client)
@@ -64,7 +64,7 @@ func main() {
 			},
 		},
 		TaskId:     vos.EnvInt("SS_TASK_ID"),
-		ProviderId: vos.EnvString("SS_PROVIDER_ID"),
+		ProviderId: vos.EnvInt64("SS_PROVIDER_ID"),
 	})
 	if err != nil {
 		log.Fatalf("Failed to submit batch payment: %v", err)

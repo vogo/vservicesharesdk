@@ -28,7 +28,7 @@ type RequestMessage struct {
 	FunCode string `json:"funCode"` // Function/operation code
 	MerId   string `json:"merId"`   // Merchant ID
 	Version string `json:"version"` // API version
-	ReqData string `json:"reqData"` // DES-encrypted business data (Base64)
+	ReqData string `json:"reqData"` // DES-encrypted business data (Hex)
 	Sign    string `json:"sign"`    // RSA signature (Base64)
 }
 
@@ -38,7 +38,7 @@ type ResponseMessage struct {
 	FunCode string `json:"funCode"` // Function/operation code
 	MerId   string `json:"merId"`   // Merchant ID
 	Version string `json:"version"` // API version
-	ResData string `json:"resData"` // DES-encrypted response data (Base64)
+	ResData string `json:"resData"` // DES-encrypted response data (Hex)
 	ResCode string `json:"resCode"` // Response code ("0000" = success)
 	ResMsg  string `json:"resMsg"`  // Human-readable response message
 	Sign    string `json:"sign"`    // RSA signature (Base64)

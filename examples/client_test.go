@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package common
+package examples
 
 import (
 	"log"
@@ -36,7 +36,7 @@ const (
 // It reads the following environment variables:
 //   - SS_API_URL: API endpoint URL (defaults to test environment)
 //   - SS_MERCHANT_ID: Merchant ID
-//   - SS_AES_KEY: AES-256 encryption key (32 bytes)
+//   - SS_DES_KEY: DES encryption key (first 8 bytes)
 //   - SS_PRIVATE_KEY: Merchant RSA private key
 //   - SS_PLATFORM_PUBLIC_KEY: Platform RSA public key
 func CreateClient() *cores.Client {
@@ -49,7 +49,7 @@ func CreateClient() *cores.Client {
 	config := cores.NewConfig(
 		apiURL,                                  // BaseURL
 		vos.EnvString("SS_MERCHANT_ID"),         // MerchantID
-		vos.EnvString("SS_AES_KEY"),             // AesKey
+		vos.EnvString("SS_DES_KEY"),             // DesKey
 		vos.EnvString("SS_PRIVATE_KEY"),         // PrivateKey
 		vos.EnvString("SS_PLATFORM_PUBLIC_KEY"), // PlatformPublicKey
 	)
