@@ -168,8 +168,8 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 
 	// 11. Verify response signature (if present)
 	if responseMsg.Sign != "" && responseMsg.ResData != "" {
-		if err := Verify(responseMsg.ResData, responseMsg.Sign, c.publicKey); err != nil {
-			return "", fmt.Errorf("response signature verification failed: %w", err)
+		if verifyErr := Verify(responseMsg.ResData, responseMsg.Sign, c.publicKey); verifyErr != nil {
+			return "", fmt.Errorf("response signature verification failed: %w", verifyErr)
 		}
 	}
 
@@ -178,12 +178,12 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 		return "", nil
 	}
 
-	decryptedData, err := DecryptDES(responseMsg.ResData, c.config.DesKey)
-	if err != nil {
-		return "", fmt.Errorf("failed to decrypt response data: %w", err)
+	decryptedData, decryptErr := DecryptDES(responseMsg.ResData, c.config.DesKey)
+	if decryptErr != nil {
+		return "", fmt.Errorf("failed to decrypt response data: %w", decryptErr)
 	}
 
-	vlog.Infof("service share api response decrypt | funCode: %s | reqId: %s | respBody: %s | decryptedData: %s", funCode, reqId, string(respBody), decryptedData)
+	vlog.Infof("service share api response decrypt | funCode: %s | reqId: %s | decryptedData: %s", funCode, reqId, decryptedData)
 
 	return decryptedData, nil
 }

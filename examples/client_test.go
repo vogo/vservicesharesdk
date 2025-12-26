@@ -18,7 +18,7 @@
 package examples
 
 import (
-	"log"
+	"testing"
 	"time"
 
 	"github.com/vogo/vogo/vos"
@@ -39,7 +39,7 @@ const (
 //   - SS_DES_KEY: DES encryption key (first 8 bytes)
 //   - SS_PRIVATE_KEY: Merchant RSA private key
 //   - SS_PLATFORM_PUBLIC_KEY: Platform RSA public key
-func CreateClient() *cores.Client {
+func CreateClient(t *testing.T) *cores.Client {
 	apiURL := vos.EnvString("SS_API_URL")
 	if apiURL == "" {
 		apiURL = DefaultAPIURL
@@ -52,6 +52,7 @@ func CreateClient() *cores.Client {
 		vos.EnvString("SS_DES_KEY"),             // DesKey
 		vos.EnvString("SS_PRIVATE_KEY"),         // PrivateKey
 		vos.EnvString("SS_PLATFORM_PUBLIC_KEY"), // PlatformPublicKey
+		vos.EnvString("SS_TASK_ID"),             // TaskIDkeyi
 	)
 
 	// Set timeout
@@ -60,7 +61,7 @@ func CreateClient() *cores.Client {
 	// Create client
 	client, err := cores.NewClient(config)
 	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
+		t.Skipf("failed to create client | err: %v", err)
 	}
 
 	return client

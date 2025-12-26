@@ -81,6 +81,7 @@ type PaymentResult struct {
 	MerOrderId string `json:"merOrderId"`
 
 	// OrderNo is the platform order number
+	// NOTE: the api doc said it's a number, but it's actually a string
 	OrderNo string `json:"orderNo"`
 
 	// Amt is the payment amount in fen

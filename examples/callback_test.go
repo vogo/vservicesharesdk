@@ -31,7 +31,7 @@ import (
 func TestCallback(t *testing.T) {
 	// Initialize client using environment variables
 	// Make sure to set SS_MERCHANT_ID, SS_DES_KEY, SS_PRIVATE_KEY, SS_PLATFORM_PUBLIC_KEY
-	client := CreateClient()
+	client := CreateClient(t)
 	freelancerService := freelancers.NewService(client)
 	paymentService := payments.NewService(client)
 
@@ -83,7 +83,7 @@ func TestCallback(t *testing.T) {
 		// Read request body
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			log.Printf("Failed to read body: %v", err)
+			log.Printf("failed to read body | err: %v", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -91,7 +91,7 @@ func TestCallback(t *testing.T) {
 		// Parse callback
 		callback, err := paymentService.ParseBatchPaymentCallback(body)
 		if err != nil {
-			log.Printf("Failed to parse payment callback: %v", err)
+			log.Printf("failed to parse payment callback | err: %v", err)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`{"resCode":"9999", "resMsg":"Failed"}`))
 			return
@@ -101,7 +101,7 @@ func TestCallback(t *testing.T) {
 		fmt.Printf("Batch ID: %s\n", callback.MerBatchId)
 		fmt.Printf("Items Count: %d\n", len(callback.QueryItems))
 		for i, item := range callback.QueryItems {
-			fmt.Printf("  Item %d: OrderNo=%s Amt=%d State=%d\n", i+1, item.OrderNo, item.Amt, item.State)
+			fmt.Printf("  Item %d: OrderNo=%d Amt=%d State=%d\n", i+1, item.OrderNo, item.Amt, item.State)
 		}
 
 		// Return success response

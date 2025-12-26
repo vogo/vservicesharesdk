@@ -18,8 +18,10 @@
 package examples
 
 import (
+	"encoding/hex"
 	"fmt"
 	"log"
+	"os"
 	"testing"
 
 	"github.com/vogo/vogo/vos"
@@ -29,10 +31,21 @@ import (
 
 func TestSilentSign(t *testing.T) {
 	// Create client from environment variables
-	client := CreateClient()
+	client := CreateClient(t)
 
 	// Create freelancers service
 	freelancerService := freelancers.NewService(client)
+
+	frontPath := vos.EnvString("SS_ID_CARD_FRONT_PATH") // ID front photo path
+	backPath := vos.EnvString("SS_ID_CARD_BACK_PATH")   // ID back photo path
+	frontBytes, err := os.ReadFile(frontPath)
+	if err != nil {
+		log.Fatalf("failed to read ID card front photo | err: %v", err)
+	}
+	backBytes, err := os.ReadFile(backPath)
+	if err != nil {
+		log.Fatalf("failed to read ID card back photo | err: %v", err)
+	}
 
 	// Prepare silent sign request
 	resp, err := freelancerService.SilentSign(&freelancers.SilentSignRequest{
@@ -40,12 +53,12 @@ func TestSilentSign(t *testing.T) {
 		CardNo:      vos.EnvString("SS_FREELANCER_CARD_NO"),
 		IdCard:      vos.EnvString("SS_FREELANCER_ID_CARD"),
 		Mobile:      vos.EnvString("SS_FREELANCER_MOBILE"),
-		PaymentType: cores.PaymentTypeBankCard, // 0=Bank, 1=Alipay, 2=WeChat
+		PaymentType: cores.PaymentTypeBankCard,
 		ProviderId:  vos.EnvInt64("SS_PROVIDER_ID"),
-		IdCardPic1:  vos.EnvString("SS_ID_CARD_FRONT_HEX"), // ID front photo in hex format
-		IdCardPic2:  vos.EnvString("SS_ID_CARD_BACK_HEX"),  // ID back photo in hex format
-		NotifyUrl:   vos.EnvString("SS_NOTIFY_URL"),        // Optional callback URL
-		TagList:     []string{"design", "marketing"},       // Optional skill tags
+		IdCardPic1:  hex.EncodeToString(frontBytes),  // ID front photo path
+		IdCardPic2:  hex.EncodeToString(backBytes),   // ID back photo path
+		NotifyUrl:   vos.EnvString("SS_NOTIFY_URL"),  // Optional callback URL
+		TagList:     []string{"design", "marketing"}, // Optional skill tags
 	})
 	if err != nil {
 		log.Fatalf("Failed to sign freelancer: %v", err)

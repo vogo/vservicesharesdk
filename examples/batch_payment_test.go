@@ -30,7 +30,7 @@ import (
 
 func TestBatchPayment(t *testing.T) {
 	// Create client from environment variables
-	client := CreateClient()
+	client := CreateClient(t)
 
 	// Create payments service
 	paymentService := payments.NewService(client)
@@ -44,30 +44,20 @@ func TestBatchPayment(t *testing.T) {
 		PayItems: []payments.PaymentItem{
 			{
 				MerOrderId:  fmt.Sprintf("ORDER_%d_001", time.Now().Unix()),
-				Amt:         10000, // 100 CNY in fen
-				PayeeName:   "张三",
-				PayeeAcc:    "6222021234567890123",
-				IdCard:      "110101199001011234",
-				Mobile:      "13800138000",
+				Amt:         10202, // CNY in fen
+				PayeeName:   vos.EnvString("SS_FREELANCER_NAME"),
+				PayeeAcc:    vos.EnvString("SS_FREELANCER_CARD_NO"),
+				IdCard:      vos.EnvString("SS_FREELANCER_ID_CARD"),
+				Mobile:      vos.EnvString("SS_FREELANCER_MOBILE"),
 				PaymentType: cores.PaymentTypeBankCard,
 				Memo:        "Freelance payment",
-			},
-			{
-				MerOrderId:  fmt.Sprintf("ORDER_%d_002", time.Now().Unix()),
-				Amt:         20000, // 200 CNY in fen
-				PayeeName:   "李四",
-				PayeeAcc:    "6222021234567890456",
-				IdCard:      "110101199101011234",
-				Mobile:      "13800138001",
-				PaymentType: cores.PaymentTypeBankCard,
-				Memo:        "Service payment",
 			},
 		},
 		TaskId:     vos.EnvInt("SS_TASK_ID"),
 		ProviderId: vos.EnvInt64("SS_PROVIDER_ID"),
 	})
 	if err != nil {
-		log.Fatalf("Failed to submit batch payment: %v", err)
+		log.Fatalf("failed to submit batch payment | err: %v", err)
 	}
 
 	fmt.Printf("Batch Payment Submitted:\n")
@@ -112,7 +102,7 @@ func TestBatchPayment(t *testing.T) {
 	fmt.Printf("\nTransaction Details:\n")
 	for i, item := range queryResp.QueryItems {
 		fmt.Printf("  [%d] Order: %s\n", i+1, item.MerOrderId)
-		fmt.Printf("      Platform Order: %s (use this as primary ID)\n", item.OrderNo)
+		fmt.Printf("      Platform Order: %d (use this as primary ID)\n", item.OrderNo)
 		fmt.Printf("      State: %s (%d)\n", stateNames[item.State], item.State)
 		fmt.Printf("      Amount: %d fen (%.2f CNY)\n", item.Amt, float64(item.Amt)/100)
 		fmt.Printf("      Fee: %d fen\n", item.Fee)

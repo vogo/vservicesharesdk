@@ -44,10 +44,13 @@ type Config struct {
 
 	// Timeout is the HTTP request timeout (default: 60 seconds)
 	Timeout time.Duration
+
+	// TaskID is the task identifier for the request
+	TaskID string
 }
 
 // NewConfig creates a new Config with default values.
-func NewConfig(baseURL, merchantID, desKey, privateKey, platformPublicKey string) *Config {
+func NewConfig(baseURL, merchantID, desKey, privateKey, platformPublicKey, taskID string) *Config {
 	return &Config{
 		BaseURL:           baseURL,
 		MerchantID:        merchantID,
@@ -56,6 +59,7 @@ func NewConfig(baseURL, merchantID, desKey, privateKey, platformPublicKey string
 		PrivateKey:        privateKey,
 		PlatformPublicKey: platformPublicKey,
 		Timeout:           60 * time.Second,
+		TaskID:            taskID,
 	}
 }
 

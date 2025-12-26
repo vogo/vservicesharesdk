@@ -28,7 +28,7 @@ import (
 
 func TestSignQuery(t *testing.T) {
 	// Create client from environment variables
-	client := CreateClient()
+	client := CreateClient(t)
 
 	// Create freelancers service
 	freelancerService := freelancers.NewService(client)

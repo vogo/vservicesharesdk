@@ -29,7 +29,7 @@ import (
 
 func TestBalanceQuery(t *testing.T) {
 	// Create client from environment variables
-	client := CreateClient()
+	client := CreateClient(t)
 
 	// Create accounts service
 	accountService := accounts.NewService(client)
@@ -40,7 +40,7 @@ func TestBalanceQuery(t *testing.T) {
 		PaymentType: cores.PaymentTypeBankCard, // Optional: 0=Bank, 1=Alipay, 2=WeChat
 	})
 	if err != nil {
-		log.Fatalf("Failed to query balance: %v", err)
+		log.Fatalf("failed to query balance | err: %v", err)
 	}
 
 	// Parse balance from fen to yuan

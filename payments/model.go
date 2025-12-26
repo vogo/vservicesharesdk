@@ -23,7 +23,7 @@ type PaymentQueryResult struct {
 	MerOrderId string `json:"merOrderId"`
 
 	// OrderNo is the platform order number (use as primary transaction identifier)
-	OrderNo string `json:"orderNo"`
+	OrderNo int64 `json:"orderNo"`
 
 	// State is the payment state
 	State PaymentState `json:"state"`
