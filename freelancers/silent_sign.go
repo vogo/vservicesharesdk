@@ -24,11 +24,6 @@ import (
 	"github.com/vogo/vservicesharesdk/cores"
 )
 
-const (
-	// FunCodeSilentSign is the function code for silent contract signing API
-	FunCodeSilentSign = "6010"
-)
-
 // SilentSignRequest represents the request for freelancer silent contract signing.
 type SilentSignRequest struct {
 	// Name is the freelancer's full name (required, max 25 chars)
@@ -106,7 +101,7 @@ func (s *Service) SilentSign(req *SilentSignRequest) (*SilentSignResponse, error
 	}
 
 	// Call API with function code 6010
-	respData, err := s.client.Do(FunCodeSilentSign, req)
+	respData, err := s.client.Do(cores.FunCodeSilentSign, req)
 	if err != nil {
 		return nil, fmt.Errorf("silent sign failed: %w", err)
 	}

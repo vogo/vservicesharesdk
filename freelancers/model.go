@@ -15,31 +15,16 @@
  * limitations under the License.
  */
 
-package payments
+package freelancers
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// ParseBatchPaymentCallback parses and validates the batch payment callback request.
-// It takes the raw JSON body of the callback request.
-func (s *Service) ParseBatchPaymentCallback(body []byte) (*BatchPaymentResult, error) {
-	// Verify and decrypt the notification
-	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to verify and decrypt callback: %w", err)
-	}
-
-	if decryptedData == "" {
-		return nil, fmt.Errorf("empty callback data")
-	}
-
-	// Unmarshal decrypted data
-	var callback BatchPaymentResult
-	if err := json.Unmarshal([]byte(decryptedData), &callback); err != nil {
-		return nil, fmt.Errorf("failed to parse callback data: %w", err)
-	}
-
-	return &callback, nil
+// SignResult represents the result of sign.
+type SignResult struct {
+	Name       string    `json:"name"`             // the freelancer's name
+	CardNo     string    `json:"cardNo"`           // the bank card number or payment account
+	IdCard     string    `json:"idCard"`           // the ID card number
+	Mobile     string    `json:"mobile"`           // the phone number registered with bank
+	State      SignState `json:"state"`            // the sign status
+	OtherParam string    `json:"otherParam"`       // other parameters
+	ProviderId int64     `json:"providerId"`       // the service provider ID
+	RetMsg     string    `json:"retMsg,omitempty"` // the failure reason if applicable
 }

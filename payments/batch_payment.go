@@ -24,92 +24,33 @@ import (
 	"github.com/vogo/vservicesharesdk/cores"
 )
 
-const (
-	// FunCodeBatchPayment is the function code for batch payment API
-	FunCodeBatchPayment = "6001"
-)
-
 // PaymentItem represents a single payment item in a batch.
 type PaymentItem struct {
-	// MerOrderId is the merchant order ID (required, max 32 chars, unique)
-	MerOrderId string `json:"merOrderId"`
-
-	// Amt is the payment amount in fen (required, 10-9800000, i.e., ¥0.1-¥98000)
-	Amt int64 `json:"amt"`
-
-	// PayeeName is the payee's name (required, max 25 chars)
-	PayeeName string `json:"payeeName"`
-
-	// PayeeAcc is the payee's account (bank card/Alipay/WeChat) (required, max 25 chars)
-	PayeeAcc string `json:"payeeAcc"`
-
-	// IdCard is the payee's ID card number (required, max 18 chars)
-	IdCard string `json:"idCard"`
-
-	// Mobile is the payee's phone number (required, 11 chars)
-	Mobile string `json:"mobile"`
-
-	// Memo is the payment note (optional, max 100 chars)
-	Memo string `json:"memo,omitempty"`
-
-	// PaymentType is the payment method (required)
-	// 0 = Bank Card, 1 = Alipay, 2 = WeChat
-	PaymentType cores.PaymentType `json:"paymentType"`
-
-	// NotifyUrl is the callback URL for this order (optional)
-	NotifyUrl string `json:"notifyUrl,omitempty"`
+	MerOrderId  string            `json:"merOrderId"`          // the merchant order ID
+	Amt         int64             `json:"amt"`                 // the payment amount in fen
+	PayeeName   string            `json:"payeeName"`           // the payee's name
+	PayeeAcc    string            `json:"payeeAcc"`            // the payee's account(bank card/Alipay/WeChat)
+	IdCard      string            `json:"idCard"`              // the payee's ID card number
+	Mobile      string            `json:"mobile"`              // the payee's phone number
+	Memo        string            `json:"memo,omitempty"`      // the payment note
+	PaymentType cores.PaymentType `json:"paymentType"`         // the payment method
+	NotifyUrl   string            `json:"notifyUrl,omitempty"` // the callback URL for this order
 }
 
 // BatchPaymentRequest represents the request for batch payment.
 type BatchPaymentRequest struct {
-	// MerBatchId is the merchant batch number (required, max 32 chars, unique)
-	MerBatchId string `json:"merBatchId"`
-
-	// PayItems is the list of payment items (required)
-	PayItems []PaymentItem `json:"payItems"`
-
-	// TaskId is the task code for payment reason (required)
-	TaskId int `json:"taskId"`
-
-	// ProviderId is the service provider ID (required)
-	ProviderId int64 `json:"providerId"`
-}
-
-// PaymentResult represents the result of a single payment order.
-type PaymentResult struct {
-	// MerOrderId is the merchant order ID
-	MerOrderId string `json:"merOrderId"`
-
-	// OrderNo is the platform order number
-	// NOTE: the api doc said it's a number, but it's actually a string
-	OrderNo string `json:"orderNo"`
-
-	// Amt is the payment amount in fen
-	Amt int64 `json:"amt"`
-
-	// Fee is the service fee in fen
-	Fee int64 `json:"fee"`
-
-	// ResCode is the result code
-	ResCode string `json:"resCode"`
-
-	// ResMsg is the result message
-	ResMsg string `json:"resMsg"`
+	MerBatchId string        `json:"merBatchId"` // the merchant batch number
+	PayItems   []PaymentItem `json:"payItems"`   // the list of payment items
+	TaskId     int           `json:"taskId"`     // the task code for payment reason
+	ProviderId int64         `json:"providerId"` // the service provider ID
 }
 
 // BatchPaymentResponse represents the response for batch payment.
 type BatchPaymentResponse struct {
-	// SuccessNum is the count of accepted orders
-	SuccessNum int `json:"successNum"`
-
-	// FailureNum is the count of rejected orders
-	FailureNum int `json:"failureNum"`
-
-	// MerBatchId is the merchant batch number
-	MerBatchId string `json:"merBatchId"`
-
-	// PayResultList contains individual order results
-	PayResultList []PaymentResult `json:"payResultList"`
+	SuccessNum    int                      `json:"successNum"`    // the count of accepted orders
+	FailureNum    int                      `json:"failureNum"`    // the count of rejected orders
+	MerBatchId    string                   `json:"merBatchId"`    // the merchant batch number
+	PayResultList []PaymentExecuteResponse `json:"payResultList"` // the list of payment results
 }
 
 // BatchPayment processes batch payment transactions for multiple freelancers.
@@ -157,7 +98,7 @@ func (s *Service) BatchPayment(req *BatchPaymentRequest) (*BatchPaymentResponse,
 	}
 
 	// Call API with function code 6001
-	respData, err := s.client.Do(FunCodeBatchPayment, req)
+	respData, err := s.client.Do(cores.FunCodeBatchPayment, req)
 	if err != nil {
 		return nil, fmt.Errorf("batch payment failed: %w", err)
 	}

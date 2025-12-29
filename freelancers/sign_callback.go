@@ -24,28 +24,9 @@ import (
 	"github.com/vogo/vogo/vlog"
 )
 
-// SignCallback represents the data in the contract signing callback.
-// Note: Fields are based on typical patterns. Please verify with actual documentation.
-type SignCallback struct {
-	// FlowId is the unique flow ID of the signing process
-	FlowId string `json:"flowId"`
-	// AccountId is the account ID of the freelancer
-	AccountId string `json:"accountId"`
-	// ContractId is the ID of the signed contract
-	ContractId string `json:"contractId"`
-	// Status is the signing status (e.g., "1" for success, "2" for fail)
-	Status string `json:"status"`
-	// SignTime is the time when the contract was signed
-	SignTime string `json:"signTime"`
-	// ErrMsg is the error message if signing failed
-	ErrMsg string `json:"errMsg"`
-	// ThirdTemplateId is the template ID used
-	ThirdTemplateId string `json:"thirdTemplateId"`
-}
-
 // ParseSignCallback parses and validates the contract signing callback request.
 // It takes the raw JSON body of the callback request.
-func (s *Service) ParseSignCallback(body []byte) (*SignCallback, error) {
+func (s *Service) ParseSignCallback(body []byte) (*SignResult, error) {
 	// Verify and decrypt the notification
 	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
 	if err != nil {
@@ -59,10 +40,10 @@ func (s *Service) ParseSignCallback(body []byte) (*SignCallback, error) {
 	}
 
 	// Unmarshal decrypted data
-	var callback SignCallback
-	if err := json.Unmarshal([]byte(decryptedData), &callback); err != nil {
+	var result SignResult
+	if err := json.Unmarshal([]byte(decryptedData), &result); err != nil {
 		return nil, fmt.Errorf("failed to parse callback data: %w", err)
 	}
 
-	return &callback, nil
+	return &result, nil
 }

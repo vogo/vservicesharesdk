@@ -20,74 +20,34 @@ package freelancers
 import (
 	"encoding/json"
 	"fmt"
-)
 
-const (
-	// FunCodeSignQuery is the function code for contract status query API
-	FunCodeSignQuery = "6011"
+	"github.com/vogo/vservicesharesdk/cores"
 )
 
 // SignState represents the sign status.
 type SignState int
 
 const (
-	// SignStateUnsigned indicates the freelancer has not signed
-	SignStateUnsigned SignState = 0
-	// SignStateSigned indicates the freelancer has signed
-	SignStateSigned SignState = 1
-	// SignStateNotFound indicates the freelancer record was not found
-	SignStateNotFound SignState = 2
-	// SignStatePending indicates the sign is pending
-	SignStatePending SignState = 3
-	// SignStateFailed indicates the sign failed
-	SignStateFailed SignState = 4
-	// SignStateCancelled indicates the sign was cancelled
-	SignStateCancelled SignState = 5
+	SignStateUnsigned  SignState = 0 // freelancer has not signed
+	SignStateSigned    SignState = 1 // freelancer has signed
+	SignStateNotFound  SignState = 2 // freelancer record not found
+	SignStatePending   SignState = 3 // sign is pending
+	SignStateFailed    SignState = 4 // sign failed
+	SignStateCancelled SignState = 5 // sign cancelled
 )
 
 // SignQueryRequest represents the request for querying freelancer sign status.
 type SignQueryRequest struct {
-	// Name is the freelancer's name (required, max 25 chars)
-	Name string `json:"name"`
-
-	// IdCard is the ID card number (required, max 18 chars)
-	IdCard string `json:"idCard"`
-
-	// Mobile is the phone number registered with bank (required, 11 chars)
-	Mobile string `json:"mobile"`
-
-	// ProviderId is the service provider ID (required, max 5 digits)
-	ProviderId int64 `json:"providerId"`
-}
-
-// SignQueryResponse represents the response for contract query.
-type SignQueryResponse struct {
-	// Name is the freelancer's name
-	Name string `json:"name"`
-
-	// CardNo is the bank card number or payment account
-	CardNo string `json:"cardNo"`
-
-	// IdCard is the ID card number
-	IdCard string `json:"idCard"`
-
-	// Mobile is the phone number
-	Mobile string `json:"mobile"`
-
-	// State is the sign status
-	State SignState `json:"state"`
-
-	// ProviderId is the service provider ID
-	ProviderId int64 `json:"providerId"`
-
-	// RetMsg is the failure reason if applicable
-	RetMsg string `json:"retMsg,omitempty"`
+	Name       string `json:"name"`       // the freelancer's name
+	IdCard     string `json:"idCard"`     // the ID card number
+	Mobile     string `json:"mobile"`     // the phone number registered with bank
+	ProviderId int64  `json:"providerId"` // the service provider ID
 }
 
 // QuerySign queries the sign status of a freelancer.
 //
 // Note: After changing bank cards, no need to re-sign.
-func (s *Service) QuerySign(req *SignQueryRequest) (*SignQueryResponse, error) {
+func (s *Service) QuerySign(req *SignQueryRequest) (*SignResult, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -106,7 +66,7 @@ func (s *Service) QuerySign(req *SignQueryRequest) (*SignQueryResponse, error) {
 	}
 
 	// Call API with function code 6011
-	respData, err := s.client.Do(FunCodeSignQuery, req)
+	respData, err := s.client.Do(cores.FunCodeSignQuery, req)
 	if err != nil {
 		return nil, fmt.Errorf("query contract failed: %w", err)
 	}
@@ -117,7 +77,7 @@ func (s *Service) QuerySign(req *SignQueryRequest) (*SignQueryResponse, error) {
 	}
 
 	// Unmarshal decrypted response
-	var resp SignQueryResponse
+	var resp SignResult
 	if err := json.Unmarshal([]byte(respData), &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}

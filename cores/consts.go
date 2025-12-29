@@ -22,10 +22,16 @@ type PaymentType string
 
 // Payment type constants
 const (
-	// PaymentTypeBankCard represents bank card payment
-	PaymentTypeBankCard PaymentType = "0"
-	// PaymentTypeAlipay represents Alipay payment
-	PaymentTypeAlipay PaymentType = "1"
-	// PaymentTypeWeChat represents WeChat payment
-	PaymentTypeWeChat PaymentType = "2"
+	PaymentTypeBankCard PaymentType = "0" // bank card payment
+	PaymentTypeAlipay   PaymentType = "1" // Alipay payment
+	PaymentTypeWeChat   PaymentType = "2" // WeChat payment
+)
+
+// Function codes
+const (
+	FunCodeBatchPayment      = "6001" // function code for batch payment
+	FunCodeBatchPaymentQuery = "6002" // function code for batch payment query
+	FunCodeBalanceQuery      = "6003" // function code for balance query
+	FunCodeSilentSign        = "6010" // function code for silent contract signing
+	FunCodeSignQuery         = "6011" // function code for contract status query
 )

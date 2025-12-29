@@ -24,11 +24,6 @@ import (
 	"github.com/vogo/vservicesharesdk/cores"
 )
 
-const (
-	// FunCodeBalanceQuery is the function code for balance query API
-	FunCodeBalanceQuery = "6003"
-)
-
 // BalanceQueryRequest represents the request for querying account balance.
 type BalanceQueryRequest struct {
 	// ProviderID is the service provider ID (required)
@@ -60,7 +55,7 @@ func (s *Service) QueryBalance(req *BalanceQueryRequest) (*BalanceQueryResponse,
 	}
 
 	// Call API with function code 6003
-	respData, err := s.client.Do(FunCodeBalanceQuery, req)
+	respData, err := s.client.Do(cores.FunCodeBalanceQuery, req)
 	if err != nil {
 		return nil, fmt.Errorf("query balance failed: %w", err)
 	}

@@ -17,35 +17,42 @@
 
 package payments
 
-// PaymentQueryResult represents the detailed result of a payment query.
-type PaymentQueryResult struct {
-	// MerOrderId is the merchant order ID
-	MerOrderId string `json:"merOrderId"`
+// PaymentResult represents the detailed result of a payment query.
+type PaymentBaseResult struct {
+	MerOrderId   string       `json:"merOrderId"`   // the merchant order ID
+	State        PaymentState `json:"state"`        // the payment state
+	Amt          int64        `json:"amt"`          // the payment amount in fen
+	Fee          int64        `json:"fee"`          // the service fee in fen
+	UserFee      int64        `json:"userFee"`      // the user's fee in fen
+	Tax          int64        `json:"tax"`          // the tax amount in fen
+	UserDueAmt   int64        `json:"userDueAmt"`   // the amount due to user in fen
+	UserFeeRatio float64      `json:"userFeeRatio"` // the user's fee ratio
+	VaTax        int64        `json:"vaTax"`        // the VAT tax amount in fen
+	VaAddTax     int64        `json:"vaAddTax"`     // the VAT additional tax amount in fen
+	CreateTime   string       `json:"createTime"`   // the order creation time (format: yyyy-MM-dd HH:mm:ss)
+	EndTime      string       `json:"endTime"`      // the transaction completion time (format: yyyy-MM-dd HH:mm:ss)
 
-	// OrderNo is the platform order number (use as primary transaction identifier)
-	OrderNo int64 `json:"orderNo"`
+	ResCode     string `json:"resCode"`     // the result code
+	ResMsg      string `json:"resMsg"`      // the result message
+	PackageInfo string `json:"packageInfo"` // the package information for wechat pay 零钱
+	MchId       string `json:"mchId"`       // the merchant ID for wechat pay 零钱
+}
 
-	// State is the payment state
-	State PaymentState `json:"state"`
+// PaymentResult represents the detailed result of a payment query.
+type PaymentResult struct {
+	PaymentBaseResult
+	OrderNo int64 `json:"orderNo"` // the platform order number (use as primary transaction identifier)
+}
 
-	// Amt is the payment amount in fen
-	Amt int64 `json:"amt"`
+// PaymentExecuteResponse represents the detailed result of a payment query.
+type PaymentExecuteResponse struct {
+	PaymentBaseResult
+	OrderNo string `json:"orderNo"` // the platform order number (v1.0版本下单返回是字符串)
+}
 
-	// Fee is the service fee in fen
-	Fee int64 `json:"fee"`
-
-	// UserFee is the user's fee in fen
-	UserFee int64 `json:"userFee"`
-
-	// Tax is the tax amount in fen
-	Tax int64 `json:"tax"`
-
-	// UserDueAmt is the amount due to user in fen
-	UserDueAmt int64 `json:"userDueAmt"`
-
-	// ResCode is the result code
-	ResCode string `json:"resCode"`
-
-	// ResMsg is the result message
-	ResMsg string `json:"resMsg"`
+// BatchPaymentResult represents the response for batch payment query.
+type BatchPaymentResult struct {
+	MerId      string          `json:"merId"`      // merchant ID
+	MerBatchId string          `json:"merBatchId"` // merchant batch number
+	QueryItems []PaymentResult `json:"queryItems"` // query items
 }

@@ -266,5 +266,5 @@ Apache License 2.0
 ## Support
 
 For API documentation and support:
-- API Docs: https://apidoc.serviceshare.com/
+- API Docs: https://apidoc.serviceshare.com/bosskg.md
 - Demo Code: https://gitee.com/bubibi1/bosskg-demo

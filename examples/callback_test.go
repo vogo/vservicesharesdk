@@ -60,12 +60,11 @@ func TestCallback(t *testing.T) {
 		}
 
 		fmt.Printf("Received Sign Callback:\n")
-		fmt.Printf("Flow ID: %s\n", callback.FlowId)
-		fmt.Printf("Contract ID: %s\n", callback.ContractId)
-		fmt.Printf("Status: %s\n", callback.Status)
-		fmt.Printf("Sign Time: %s\n", callback.SignTime)
-		if callback.ErrMsg != "" {
-			fmt.Printf("Error: %s\n", callback.ErrMsg)
+		fmt.Printf("Name: %s\n", callback.Name)
+		fmt.Printf("CardNo: %s\n", callback.CardNo)
+		fmt.Printf("State: %d\n", callback.State)
+		if callback.RetMsg != "" {
+			fmt.Printf("RetMsg: %s\n", callback.RetMsg)
 		}
 
 		// Return success response

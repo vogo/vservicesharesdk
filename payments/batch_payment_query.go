@@ -20,58 +20,31 @@ package payments
 import (
 	"encoding/json"
 	"fmt"
-)
 
-const (
-	// FunCodeBatchPaymentQuery is the function code for batch payment query API
-	FunCodeBatchPaymentQuery = "6002"
+	"github.com/vogo/vservicesharesdk/cores"
 )
 
 // PaymentState represents the payment transaction state.
 type PaymentState int
 
 const (
-	// PaymentStateProcessing indicates the payment is being processed
-	PaymentStateProcessing PaymentState = 1
-	// PaymentStateSuccess indicates the payment succeeded
-	PaymentStateSuccess PaymentState = 3
-	// PaymentStateFailed indicates the payment failed
-	PaymentStateFailed PaymentState = 4
-	// PaymentStatePendingConfirm indicates awaiting user confirmation
-	PaymentStatePendingConfirm PaymentState = 6
-	// PaymentStateCancelled indicates the payment was cancelled
-	PaymentStateCancelled PaymentState = 7
+	PaymentStateProcessing     PaymentState = 1 // indicates the payment is being processed
+	PaymentStateSuccess        PaymentState = 3 // indicates the payment succeeded
+	PaymentStateFailed         PaymentState = 4 // indicates the payment failed
+	PaymentStatePendingConfirm PaymentState = 6 // indicates awaiting user confirmation
+	PaymentStateCancelled      PaymentState = 7 // indicates the payment was cancelled
 )
 
 // QueryItem represents a query filter for specific orders.
 type QueryItem struct {
-	// MerOrderId is the merchant order ID (optional)
-	MerOrderId string `json:"merOrderId,omitempty"`
-
-	// OrderNo is the platform order number (optional)
-	OrderNo string `json:"orderNo,omitempty"`
+	MerOrderId string `json:"merOrderId,omitempty"` // merchant order ID
+	OrderNo    string `json:"orderNo,omitempty"`    // platform order number
 }
 
 // BatchPaymentQueryRequest represents the request for querying batch payment status.
 type BatchPaymentQueryRequest struct {
-	// MerBatchId is the batch number to query (required, max 32 chars)
-	MerBatchId string `json:"merBatchId"`
-
-	// QueryItems specifies which orders to query (optional)
-	// If omitted, returns all orders in the batch
-	QueryItems []QueryItem `json:"queryItems,omitempty"`
-}
-
-// BatchPaymentQueryResponse represents the response for batch payment query.
-type BatchPaymentQueryResponse struct {
-	// MerId is the merchant ID
-	MerId string `json:"merId"`
-
-	// MerBatchId is the merchant batch number
-	MerBatchId string `json:"merBatchId"`
-
-	// QueryItems contains the transaction details
-	QueryItems []PaymentQueryResult `json:"queryItems"`
+	MerBatchId string      `json:"merBatchId"`           // merchant batch number
+	QueryItems []QueryItem `json:"queryItems,omitempty"` // query items
 }
 
 // QueryBatchPayment retrieves payment status for batch transactions.
@@ -80,7 +53,7 @@ type BatchPaymentQueryResponse struct {
 // - Omitting QueryItems returns all orders in the batch
 // - Error codes 6000 or 6042 indicate communication issues only, NOT transaction failures
 // - Always use OrderNo as the primary transaction identifier to prevent duplicate processing
-func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymentQueryResponse, error) {
+func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymentResult, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -90,7 +63,7 @@ func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymen
 	}
 
 	// Call API with function code 6002
-	respData, err := s.client.Do(FunCodeBatchPaymentQuery, req)
+	respData, err := s.client.Do(cores.FunCodeBatchPaymentQuery, req)
 	if err != nil {
 		return nil, fmt.Errorf("query batch payment failed: %w", err)
 	}
@@ -101,7 +74,7 @@ func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymen
 	}
 
 	// Unmarshal decrypted response
-	var resp BatchPaymentQueryResponse
+	var resp BatchPaymentResult
 	if err := json.Unmarshal([]byte(respData), &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
