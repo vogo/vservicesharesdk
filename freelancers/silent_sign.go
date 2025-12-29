@@ -79,7 +79,7 @@ func (s *Service) SilentSign(req *SilentSignRequest) (*SilentSignResponse, error
 	// Call API with function code 6010
 	respData, err := s.client.Do(cores.FunCodeSilentSign, req)
 	if err != nil {
-		return nil, fmt.Errorf("silent sign failed: %w", err)
+		return nil, err
 	}
 
 	// Handle empty response (valid when otherParam is not provided)

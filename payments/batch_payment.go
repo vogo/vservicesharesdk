@@ -100,7 +100,7 @@ func (s *Service) BatchPayment(req *BatchPaymentRequest) (*BatchPaymentResponse,
 	// Call API with function code 6001
 	respData, err := s.client.Do(cores.FunCodeBatchPayment, req)
 	if err != nil {
-		return nil, fmt.Errorf("batch payment failed: %w", err)
+		return nil, err
 	}
 
 	// Handle empty response

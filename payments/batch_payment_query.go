@@ -54,7 +54,7 @@ func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymen
 	// Call API with function code 6002
 	respData, err := s.client.Do(cores.FunCodeBatchPaymentQuery, req)
 	if err != nil {
-		return nil, fmt.Errorf("query batch payment failed: %w", err)
+		return nil, err
 	}
 
 	// Handle empty response

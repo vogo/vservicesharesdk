@@ -57,7 +57,7 @@ func (s *Service) QueryBalance(req *BalanceQueryRequest) (*BalanceQueryResponse,
 	// Call API with function code 6003
 	respData, err := s.client.Do(cores.FunCodeBalanceQuery, req)
 	if err != nil {
-		return nil, fmt.Errorf("query balance failed: %w", err)
+		return nil, err
 	}
 
 	// Handle empty response
