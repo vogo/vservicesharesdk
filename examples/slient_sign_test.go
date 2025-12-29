@@ -48,7 +48,7 @@ func TestSilentSign(t *testing.T) {
 	}
 
 	// Prepare silent sign request
-	resp, err := freelancerService.SilentSign(&freelancers.SilentSignRequest{
+	resp, err := freelancerService.SignContract(&freelancers.SignContractRequest{
 		Name:        vos.EnvString("SS_FREELANCER_NAME"),
 		CardNo:      vos.EnvString("SS_FREELANCER_CARD_NO"),
 		IdCard:      vos.EnvString("SS_FREELANCER_ID_CARD"),

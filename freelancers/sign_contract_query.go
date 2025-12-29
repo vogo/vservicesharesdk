@@ -66,7 +66,7 @@ func (s *Service) QuerySign(req *SignQueryRequest) (*SignResult, error) {
 	}
 
 	// Call API with function code 6011
-	respData, err := s.client.Do(cores.FunCodeSignQuery, req)
+	respData, err := s.client.Do(cores.FunCodeSignContractQuery, req)
 	if err != nil {
 		return nil, err
 	}

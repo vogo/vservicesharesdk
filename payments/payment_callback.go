@@ -24,7 +24,7 @@ import (
 
 // ParseBatchPaymentCallback parses and validates the batch payment callback request.
 // It takes the raw JSON body of the callback request.
-func (s *Service) ParseBatchPaymentCallback(body []byte) (*BatchPaymentResult, error) {
+func (s *Service) ParseBatchPaymentCallback(body []byte) (*PaymentBatchResult, error) {
 	// Verify and decrypt the notification
 	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
 	if err != nil {
@@ -36,7 +36,7 @@ func (s *Service) ParseBatchPaymentCallback(body []byte) (*BatchPaymentResult, e
 	}
 
 	// Unmarshal decrypted data
-	var callback BatchPaymentResult
+	var callback PaymentBatchResult
 	if err := json.Unmarshal([]byte(decryptedData), &callback); err != nil {
 		return nil, fmt.Errorf("failed to parse callback data: %w", err)
 	}

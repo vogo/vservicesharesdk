@@ -37,30 +37,30 @@ type PaymentItem struct {
 	NotifyUrl   string            `json:"notifyUrl,omitempty"` // the callback URL for this order
 }
 
-// BatchPaymentRequest represents the request for batch payment.
-type BatchPaymentRequest struct {
+// PaymentRequest represents the request for batch payment.
+type PaymentRequest struct {
 	MerBatchId string        `json:"merBatchId"` // the merchant batch number
 	PayItems   []PaymentItem `json:"payItems"`   // the list of payment items
 	TaskId     int           `json:"taskId"`     // the task code for payment reason
 	ProviderId int64         `json:"providerId"` // the service provider ID
 }
 
-// BatchPaymentResponse represents the response for batch payment.
-type BatchPaymentResponse struct {
-	SuccessNum    int                      `json:"successNum"`    // the count of accepted orders
-	FailureNum    int                      `json:"failureNum"`    // the count of rejected orders
-	MerBatchId    string                   `json:"merBatchId"`    // the merchant batch number
-	PayResultList []PaymentExecuteResponse `json:"payResultList"` // the list of payment results
+// PaymentResponse represents the response for batch payment.
+type PaymentResponse struct {
+	SuccessNum    int                    `json:"successNum"`    // the count of accepted orders
+	FailureNum    int                    `json:"failureNum"`    // the count of rejected orders
+	MerBatchId    string                 `json:"merBatchId"`    // the merchant batch number
+	PayResultList []PaymentExecuteResult `json:"payResultList"` // the list of payment results
 }
 
-// BatchPayment processes batch payment transactions for multiple freelancers.
+// Payment processes batch payment transactions for multiple freelancers.
 //
 // IMPORTANT: The synchronous response only indicates that the system has received the request.
 // It does NOT represent the final transaction status. Always verify the final status via
 // async notifications or the query interface.
 //
 // Single transaction limits: ¥0.1 to ¥98,000 (10 to 9,800,000 fen).
-func (s *Service) BatchPayment(req *BatchPaymentRequest) (*BatchPaymentResponse, error) {
+func (s *Service) Payment(req *PaymentRequest) (*PaymentResponse, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -98,7 +98,7 @@ func (s *Service) BatchPayment(req *BatchPaymentRequest) (*BatchPaymentResponse,
 	}
 
 	// Call API with function code 6001
-	respData, err := s.client.Do(cores.FunCodeBatchPayment, req)
+	respData, err := s.client.Do(cores.FunCodePayment, req)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (s *Service) BatchPayment(req *BatchPaymentRequest) (*BatchPaymentResponse,
 	}
 
 	// Unmarshal decrypted response
-	var resp BatchPaymentResponse
+	var resp PaymentResponse
 	if err := json.Unmarshal([]byte(respData), &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}

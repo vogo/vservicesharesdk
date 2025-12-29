@@ -39,7 +39,7 @@ func TestBatchPayment(t *testing.T) {
 	batchId := fmt.Sprintf("BATCH_%d", time.Now().Unix())
 
 	// Submit batch payment
-	resp, err := paymentService.BatchPayment(&payments.BatchPaymentRequest{
+	resp, err := paymentService.Payment(&payments.PaymentRequest{
 		MerBatchId: batchId,
 		PayItems: []payments.PaymentItem{
 			{
@@ -80,7 +80,7 @@ func TestBatchPayment(t *testing.T) {
 	time.Sleep(2 * time.Second)
 	fmt.Printf("\n--- Querying Batch Payment Status ---\n")
 
-	queryResp, err := paymentService.QueryBatchPayment(&payments.BatchPaymentQueryRequest{
+	queryResp, err := paymentService.PaymentQuery(&payments.PaymentQueryRequest{
 		MerBatchId: batchId,
 		// Omit QueryItems to get all orders
 	})

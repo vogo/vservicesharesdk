@@ -56,14 +56,14 @@ type PaymentResult struct {
 	OrderNo int64 `json:"orderNo"` // the platform order number (use as primary transaction identifier)
 }
 
-// PaymentExecuteResponse represents the detailed result of a payment query.
-type PaymentExecuteResponse struct {
+// PaymentExecuteResult represents the detailed result of a payment query.
+type PaymentExecuteResult struct {
 	PaymentBaseResult
 	OrderNo string `json:"orderNo"` // the platform order number (v1.0版本下单返回是字符串)
 }
 
-// BatchPaymentResult represents the response for batch payment query.
-type BatchPaymentResult struct {
+// PaymentBatchResult represents the response for batch payment query.
+type PaymentBatchResult struct {
 	MerId      string          `json:"merId"`      // merchant ID
 	MerBatchId string          `json:"merBatchId"` // merchant batch number
 	QueryItems []PaymentResult `json:"queryItems"` // query items

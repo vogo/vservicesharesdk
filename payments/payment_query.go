@@ -24,25 +24,25 @@ import (
 	"github.com/vogo/vservicesharesdk/cores"
 )
 
-// QueryItem represents a query filter for specific orders.
-type QueryItem struct {
+// PaymentQueryItem represents a query filter for specific orders.
+type PaymentQueryItem struct {
 	MerOrderId string `json:"merOrderId,omitempty"` // merchant order ID
 	OrderNo    string `json:"orderNo,omitempty"`    // platform order number
 }
 
-// BatchPaymentQueryRequest represents the request for querying batch payment status.
-type BatchPaymentQueryRequest struct {
-	MerBatchId string      `json:"merBatchId"`           // merchant batch number
-	QueryItems []QueryItem `json:"queryItems,omitempty"` // query items
+// PaymentQueryRequest represents the request for querying batch payment status.
+type PaymentQueryRequest struct {
+	MerBatchId string             `json:"merBatchId"`           // merchant batch number
+	QueryItems []PaymentQueryItem `json:"queryItems,omitempty"` // query items
 }
 
-// QueryBatchPayment retrieves payment status for batch transactions.
+// PaymentQuery retrieves payment status for batch transactions.
 //
 // IMPORTANT NOTES:
 // - Omitting QueryItems returns all orders in the batch
 // - Error codes 6000 or 6042 indicate communication issues only, NOT transaction failures
 // - Always use OrderNo as the primary transaction identifier to prevent duplicate processing
-func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymentResult, error) {
+func (s *Service) PaymentQuery(req *PaymentQueryRequest) (*PaymentBatchResult, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -52,7 +52,7 @@ func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymen
 	}
 
 	// Call API with function code 6002
-	respData, err := s.client.Do(cores.FunCodeBatchPaymentQuery, req)
+	respData, err := s.client.Do(cores.FunCodePaymentQuery, req)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (s *Service) QueryBatchPayment(req *BatchPaymentQueryRequest) (*BatchPaymen
 	}
 
 	// Unmarshal decrypted response
-	var resp BatchPaymentResult
+	var resp PaymentBatchResult
 	if err := json.Unmarshal([]byte(respData), &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}

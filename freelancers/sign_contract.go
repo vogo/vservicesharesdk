@@ -24,8 +24,8 @@ import (
 	"github.com/vogo/vservicesharesdk/cores"
 )
 
-// SilentSignRequest represents the request for freelancer silent contract signing.
-type SilentSignRequest struct {
+// SignContractRequest represents the request for freelancer silent contract signing.
+type SignContractRequest struct {
 	Name        string            `json:"name"`                 // the freelancer's full name
 	CardNo      string            `json:"cardNo"`               // the bank card number, Alipay account (phone/email), or WeChat OpenID
 	IdCard      string            `json:"idCard"`               // the ID card number, age typically 18-65
@@ -39,17 +39,17 @@ type SilentSignRequest struct {
 	TagList     []string          `json:"tagList,omitempty"`    // the array of freelancer skill tags
 }
 
-// SilentSignResponse represents the response for silent contract signing.
-type SilentSignResponse struct {
+// SignContractResponse represents the response for silent contract signing.
+type SignContractResponse struct {
 	OtherParam string `json:"otherParam,omitempty"` // the pass-through parameter returned
 }
 
-// SilentSign initiates silent contract signing for a freelancer.
+// SignContract initiates silent contract signing for a freelancer.
 // This is an asynchronous operation; the synchronous response only confirms receipt.
 // Results should be obtained through async notifications or signature query interface.
 //
 // Note: Contracts are validated by merchant ID + name + ID card + phone + provider ID.
-func (s *Service) SilentSign(req *SilentSignRequest) (*SilentSignResponse, error) {
+func (s *Service) SignContract(req *SignContractRequest) (*SignContractResponse, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -77,18 +77,18 @@ func (s *Service) SilentSign(req *SilentSignRequest) (*SilentSignResponse, error
 	}
 
 	// Call API with function code 6010
-	respData, err := s.client.Do(cores.FunCodeSilentSign, req)
+	respData, err := s.client.Do(cores.FunCodeSignContract, req)
 	if err != nil {
 		return nil, err
 	}
 
 	// Handle empty response (valid when otherParam is not provided)
 	if respData == "" {
-		return &SilentSignResponse{}, nil
+		return &SignContractResponse{}, nil
 	}
 
 	// Unmarshal decrypted response
-	var resp SilentSignResponse
+	var resp SignContractResponse
 	if err := json.Unmarshal([]byte(respData), &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
