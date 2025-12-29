@@ -41,7 +41,7 @@ type PaymentItem struct {
 type PaymentRequest struct {
 	MerBatchId string        `json:"merBatchId"` // the merchant batch number
 	PayItems   []PaymentItem `json:"payItems"`   // the list of payment items
-	TaskId     int           `json:"taskId"`     // the task code for payment reason
+	TaskId     int64         `json:"taskId"`     // the task code for payment reason
 	ProviderId int64         `json:"providerId"` // the service provider ID
 }
 

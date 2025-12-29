@@ -53,7 +53,7 @@ func TestBatchPayment(t *testing.T) {
 				Memo:        "Freelance payment",
 			},
 		},
-		TaskId:     vos.EnvInt("SS_TASK_ID"),
+		TaskId:     vos.EnvInt64("SS_TASK_ID"),
 		ProviderId: vos.EnvInt64("SS_PROVIDER_ID"),
 	})
 	if err != nil {

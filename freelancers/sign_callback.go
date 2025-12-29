@@ -26,7 +26,7 @@ import (
 
 // ParseSignCallback parses and validates the contract signing callback request.
 // It takes the raw JSON body of the callback request.
-func (s *Service) ParseSignCallback(body []byte) (*SignResult, error) {
+func (s *Service) ParseSignCallback(body []byte) (*SignContractResult, error) {
 	// Verify and decrypt the notification
 	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
 	if err != nil {
@@ -40,7 +40,7 @@ func (s *Service) ParseSignCallback(body []byte) (*SignResult, error) {
 	}
 
 	// Unmarshal decrypted data
-	var result SignResult
+	var result SignContractResult
 	if err := json.Unmarshal([]byte(decryptedData), &result); err != nil {
 		return nil, fmt.Errorf("failed to parse callback data: %w", err)
 	}

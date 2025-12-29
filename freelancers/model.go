@@ -17,8 +17,8 @@
 
 package freelancers
 
-// SignResult represents the result of sign.
-type SignResult struct {
+// SignContractResult represents the result of sign.
+type SignContractResult struct {
 	Name       string    `json:"name"`             // the freelancer's name
 	CardNo     string    `json:"cardNo"`           // the bank card number or payment account
 	IdCard     string    `json:"idCard"`           // the ID card number

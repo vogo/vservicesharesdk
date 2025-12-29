@@ -44,10 +44,10 @@ type SignQueryRequest struct {
 	ProviderId int64  `json:"providerId"` // the service provider ID
 }
 
-// QuerySign queries the sign status of a freelancer.
+// SignContractQuery queries the sign status of a freelancer.
 //
 // Note: After changing bank cards, no need to re-sign.
-func (s *Service) QuerySign(req *SignQueryRequest) (*SignResult, error) {
+func (s *Service) SignContractQuery(req *SignQueryRequest) (*SignContractResult, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -77,7 +77,7 @@ func (s *Service) QuerySign(req *SignQueryRequest) (*SignResult, error) {
 	}
 
 	// Unmarshal decrypted response
-	var resp SignResult
+	var resp SignContractResult
 	if err := json.Unmarshal([]byte(respData), &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}

@@ -34,7 +34,7 @@ func TestSignQuery(t *testing.T) {
 	freelancerService := freelancers.NewService(client)
 
 	// Query sign status
-	resp, err := freelancerService.QuerySign(&freelancers.SignQueryRequest{
+	resp, err := freelancerService.SignContractQuery(&freelancers.SignQueryRequest{
 		Name:       vos.EnvString("SS_FREELANCER_NAME"),
 		IdCard:     vos.EnvString("SS_FREELANCER_ID_CARD"),
 		Mobile:     vos.EnvString("SS_FREELANCER_MOBILE"),

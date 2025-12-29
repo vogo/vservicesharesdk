@@ -52,7 +52,7 @@ func CreateClient(t *testing.T) *cores.Client {
 		vos.EnvString("SS_DES_KEY"),             // DesKey
 		vos.EnvString("SS_PRIVATE_KEY"),         // PrivateKey
 		vos.EnvString("SS_PLATFORM_PUBLIC_KEY"), // PlatformPublicKey
-		vos.EnvString("SS_TASK_ID"),             // TaskIDkeyi
+		vos.EnvInt64("SS_TASK_ID"),              // TaskID
 	)
 
 	// Set timeout

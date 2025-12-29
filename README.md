@@ -32,24 +32,25 @@ config := cores.NewConfig(
     "12345678901234567890123456789012", // DES key (uses first 8 bytes)
     "YOUR_RSA_PRIVATE_KEY",              // PEM format or raw base64
     "YOUR_PLATFORM_PUBLIC_KEY",          // PEM format or raw base64
+	"YOUR_TASK_ID",                      // Task ID
 )
 
 // Create client
 client, err := cores.NewClient(config)
 if err != nil {
-    log.Fatal(err)
+	log.Fatal(err)
 }
 
 // Create service and query balance
 accountService := accounts.NewService(client)
 resp, err := accountService.QueryBalance(&accounts.BalanceQueryRequest{
-    ProviderID: "YOUR_PROVIDER_ID",
+	ProviderID: 123456789, // int64
 })
 if err != nil {
-    log.Fatal(err)
+	log.Fatal(err)
 }
 
-fmt.Printf("Balance: %s fen\n", resp.Balance)
+fmt.Printf("Balance: %d fen\n", resp.Balance)
 ```
 
 ## Configuration
@@ -63,6 +64,7 @@ fmt.Printf("Balance: %s fen\n", resp.Balance)
 | `DesKey` | string | Yes | DES encryption key (uses first 8 bytes) |
 | `PrivateKey` | string | Yes | Merchant RSA private key (PEM or raw base64) |
 | `PlatformPublicKey` | string | Yes | Platform RSA public key (PEM or raw base64) |
+| `TaskID` | string | Yes | Task ID for the request |
 | `Version` | string | No | API version (default: "V1.0") |
 | `Timeout` | time.Duration | No | HTTP timeout (default: 60s) |
 
@@ -90,7 +92,7 @@ Contact ServiceShare operations team for production URL.
 ```go
 accountService := accounts.NewService(client)
 resp, err := accountService.QueryBalance(&accounts.BalanceQueryRequest{
-    ProviderID:  "YOUR_PROVIDER_ID",
+    ProviderID:  123456789, // int64
     PaymentType: cores.PaymentTypeBankCard, // Optional
 })
 // resp.Balance in fen (1 yuan = 100 fen)
@@ -101,13 +103,13 @@ resp, err := accountService.QueryBalance(&accounts.BalanceQueryRequest{
 **Silent Contract Signing (FunCode: 6010)**
 ```go
 freelancerService := freelancers.NewService(client)
-resp, err := freelancerService.SilentSign(&freelancers.SilentSignRequest{
+resp, err := freelancerService.SignContract(&freelancers.SignContractRequest{
     Name:        "张三",
     CardNo:      "6222021234567890123",
     IdCard:      "110101199001011234",
     Mobile:      "13800138000",
     PaymentType: cores.PaymentTypeBankCard,
-    ProviderId:  "YOUR_PROVIDER_ID",
+    ProviderId:  123456789, // int64
     IdCardPic1:  "HEX_ENCODED_FRONT_PHOTO",
     IdCardPic2:  "HEX_ENCODED_BACK_PHOTO",
 })
@@ -120,7 +122,7 @@ resp, err := freelancerService.QuerySign(&freelancers.SignQueryRequest{
     Name:       "张三",
     IdCard:     "110101199001011234",
     Mobile:     "13800138000",
-    ProviderId: "YOUR_PROVIDER_ID",
+    ProviderId: 123456789, // int64
 })
 // resp.State: 0=unsigned, 1=signed, 2=not found, 3=pending, 4=failed, 5=cancelled
 ```
@@ -130,7 +132,7 @@ resp, err := freelancerService.QuerySign(&freelancers.SignQueryRequest{
 **Batch Payment (FunCode: 6001)**
 ```go
 paymentService := payments.NewService(client)
-resp, err := paymentService.BatchPayment(&payments.BatchPaymentRequest{
+resp, err := paymentService.Payment(&payments.PaymentRequest{
     MerBatchId: "BATCH_001",
     PayItems: []payments.PaymentItem{
         {
@@ -143,8 +145,8 @@ resp, err := paymentService.BatchPayment(&payments.BatchPaymentRequest{
             PaymentType: cores.PaymentTypeBankCard,
         },
     },
-    TaskId:     1001,
-    ProviderId: "YOUR_PROVIDER_ID",
+    TaskId:     1001,    // int64
+    ProviderId: 123456789, // int64
 })
 // resp.SuccessNum, resp.FailureNum, resp.PayResultList
 // Note: Synchronous response only confirms receipt
@@ -152,7 +154,7 @@ resp, err := paymentService.BatchPayment(&payments.BatchPaymentRequest{
 
 **Batch Payment Query (FunCode: 6002)**
 ```go
-resp, err := paymentService.QueryBatchPayment(&payments.BatchPaymentQueryRequest{
+resp, err := paymentService.PaymentQuery(&payments.PaymentQueryRequest{
     MerBatchId: "BATCH_001",
     // Omit QueryItems to get all orders
 })
@@ -172,7 +174,7 @@ if err != nil {
     // Handle error
     return
 }
-fmt.Printf("Sign Result: ContractID=%s Status=%s\n", callback.ContractId, callback.Status)
+fmt.Printf("Sign Result: Name=%s State=%d\n", callback.Name, callback.State)
 ```
 
 ### Batch Payment Notification (FunCode: 6001/5.3.4)
@@ -212,11 +214,12 @@ if err != nil {
 ```go
 // Load from environment variables
 config := cores.NewConfig(
-    os.Getenv("SS_API_URL"),
-    os.Getenv("SS_MERCHANT_ID"),
-    os.Getenv("SS_DES_KEY"),
-    os.Getenv("SS_PRIVATE_KEY"),
-    os.Getenv("SS_PLATFORM_PUBLIC_KEY"),
+    vos.EnvString("SS_API_URL"),            // BaseURL
+    vos.EnvString("SS_MERCHANT_ID"),         // MerchantID
+    vos.EnvString("SS_DES_KEY"),             // DesKey
+    vos.EnvString("SS_PRIVATE_KEY"),         // PrivateKey
+    vos.EnvString("SS_PLATFORM_PUBLIC_KEY"), // PlatformPublicKey
+    vos.EnvInt64("SS_TASK_ID"),              // TaskID
 )
 ```
 

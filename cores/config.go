@@ -24,33 +24,18 @@ import (
 
 // Config holds the configuration for the ServiceShare API client.
 type Config struct {
-	// BaseURL is the API endpoint URL
-	BaseURL string
-
-	// MerchantID is the merchant identifier assigned by the platform
-	MerchantID string
-
-	// Version is the API version (default: "V1.0")
-	Version string
-
-	// DesKey is the DES encryption key (uses first 8 bytes)
-	DesKey string
-
-	// PrivateKey is the merchant's RSA private key in PEM format
-	PrivateKey string
-
-	// PlatformPublicKey is the platform's RSA public key in PEM format
-	PlatformPublicKey string
-
-	// Timeout is the HTTP request timeout (default: 60 seconds)
-	Timeout time.Duration
-
-	// TaskID is the task identifier for the request
-	TaskID string
+	BaseURL           string        //  the API endpoint URL
+	MerchantID        string        // the merchant identifier assigned by the platform
+	Version           string        // the API version (default: "V1.0")
+	DesKey            string        // the DES encryption key (uses first 8 bytes)
+	PrivateKey        string        // the merchant's RSA private key in PEM format
+	PlatformPublicKey string        // the platform's RSA public key in PEM format
+	Timeout           time.Duration // the HTTP request timeout (default: 60 seconds)
+	TaskID            int64         // the task identifier for the request
 }
 
 // NewConfig creates a new Config with default values.
-func NewConfig(baseURL, merchantID, desKey, privateKey, platformPublicKey, taskID string) *Config {
+func NewConfig(baseURL, merchantID, desKey, privateKey, platformPublicKey string, taskID int64) *Config {
 	return &Config{
 		BaseURL:           baseURL,
 		MerchantID:        merchantID,
