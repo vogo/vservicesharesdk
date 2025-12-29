@@ -24,17 +24,6 @@ import (
 	"github.com/vogo/vservicesharesdk/cores"
 )
 
-// PaymentState represents the payment transaction state.
-type PaymentState int
-
-const (
-	PaymentStateProcessing     PaymentState = 1 // indicates the payment is being processed
-	PaymentStateSuccess        PaymentState = 3 // indicates the payment succeeded
-	PaymentStateFailed         PaymentState = 4 // indicates the payment failed
-	PaymentStatePendingConfirm PaymentState = 6 // indicates awaiting user confirmation
-	PaymentStateCancelled      PaymentState = 7 // indicates the payment was cancelled
-)
-
 // QueryItem represents a query filter for specific orders.
 type QueryItem struct {
 	MerOrderId string `json:"merOrderId,omitempty"` // merchant order ID

@@ -17,6 +17,17 @@
 
 package payments
 
+// PaymentState represents the payment transaction state.
+type PaymentState int
+
+const (
+	PaymentStateProcessing     PaymentState = 1 // indicates the payment is being processed
+	PaymentStateSuccess        PaymentState = 3 // indicates the payment succeeded
+	PaymentStateFailed         PaymentState = 4 // indicates the payment failed
+	PaymentStatePendingConfirm PaymentState = 6 // indicates awaiting user confirmation
+	PaymentStateCancelled      PaymentState = 7 // indicates the payment was cancelled
+)
+
 // PaymentResult represents the detailed result of a payment query.
 type PaymentBaseResult struct {
 	MerOrderId   string       `json:"merOrderId"`   // the merchant order ID
