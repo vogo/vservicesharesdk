@@ -26,46 +26,22 @@ import (
 
 // SilentSignRequest represents the request for freelancer silent contract signing.
 type SilentSignRequest struct {
-	// Name is the freelancer's full name (required, max 25 chars)
-	Name string `json:"name"`
-
-	// CardNo is the bank card number, Alipay account (phone/email), or WeChat OpenID (required, max 25 chars)
-	CardNo string `json:"cardNo"`
-
-	// IdCard is the ID card number, age typically 18-65 (required, max 18 chars)
-	IdCard string `json:"idCard"`
-
-	// Mobile is the phone number registered with bank (required, 11 chars)
-	Mobile string `json:"mobile"`
-
-	// PaymentType is the payment method (required)
-	// 0 = Bank Card, 1 = Alipay, 2 = WeChat
-	PaymentType cores.PaymentType `json:"paymentType"`
-
-	// ProviderId is the service provider ID (required, max 20 chars)
-	ProviderId int64 `json:"providerId"`
-
-	// IdCardPic1 is the ID card front photo in hex format (required)
-	IdCardPic1 string `json:"idCardPic1"`
-
-	// IdCardPic2 is the ID card back photo in hex format (required)
-	IdCardPic2 string `json:"idCardPic2"`
-
-	// OtherParam is a pass-through parameter (optional)
-	OtherParam string `json:"otherParam,omitempty"`
-
-	// NotifyUrl is the callback URL for signing results (optional)
-	NotifyUrl string `json:"notifyUrl,omitempty"`
-
-	// TagList is an array of freelancer skill tags (optional)
-	// Examples: design, marketing, etc.
-	TagList []string `json:"tagList,omitempty"`
+	Name        string            `json:"name"`                 // the freelancer's full name
+	CardNo      string            `json:"cardNo"`               // the bank card number, Alipay account (phone/email), or WeChat OpenID
+	IdCard      string            `json:"idCard"`               // the ID card number, age typically 18-65
+	Mobile      string            `json:"mobile"`               // the phone number registered with bank
+	PaymentType cores.PaymentType `json:"paymentType"`          // the payment method
+	ProviderId  int64             `json:"providerId"`           // the service provider ID
+	IdCardPic1  string            `json:"idCardPic1"`           // the ID card front photo in hex format
+	IdCardPic2  string            `json:"idCardPic2"`           // the ID card back photo in hex format
+	OtherParam  string            `json:"otherParam,omitempty"` // the pass-through parameter
+	NotifyUrl   string            `json:"notifyUrl,omitempty"`  // the callback URL for signing results
+	TagList     []string          `json:"tagList,omitempty"`    // the array of freelancer skill tags
 }
 
 // SilentSignResponse represents the response for silent contract signing.
 type SilentSignResponse struct {
-	// OtherParam is the pass-through parameter returned (optional)
-	OtherParam string `json:"otherParam,omitempty"`
+	OtherParam string `json:"otherParam,omitempty"` // the pass-through parameter returned
 }
 
 // SilentSign initiates silent contract signing for a freelancer.

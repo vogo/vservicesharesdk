@@ -88,12 +88,13 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal request data: %w", err)
 	}
+	reqDataString := string(reqDataJSON)
 
 	vlog.Infof("service share api request | merchantId: %s | funCode: %s | reqId: %s  | url: %s | reqData: %s",
-		c.config.MerchantID, funCode, reqId, c.config.BaseURL, string(reqDataJSON))
+		c.config.MerchantID, funCode, reqId, c.config.BaseURL, reqDataString)
 
 	// 3. Encrypt request data with DES
-	encryptedData, err := EncryptDES(string(reqDataJSON), c.config.DesKey)
+	encryptedData, err := EncryptDES(reqDataString, c.config.DesKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to encrypt request data: %w", err)
 	}
