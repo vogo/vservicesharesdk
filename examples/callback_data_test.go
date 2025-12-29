@@ -28,7 +28,7 @@ func TestCallbackData(t *testing.T) {
 
 	client := CreateClient(t)
 	paymentService := payments.NewService(client)
-	callback, err := paymentService.ParseBatchPaymentCallback([]byte(data))
+	callback, err := paymentService.ParsePaymentCallback([]byte(data))
 	if err != nil {
 		t.Fatalf("failed to parse callback data: %v", err)
 	}

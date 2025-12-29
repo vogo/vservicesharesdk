@@ -24,9 +24,9 @@ import (
 	"github.com/vogo/vogo/vlog"
 )
 
-// ParseSignCallback parses and validates the contract signing callback request.
+// ParseSignContractCallback parses and validates the contract signing callback request.
 // It takes the raw JSON body of the callback request.
-func (s *Service) ParseSignCallback(body []byte) (*SignContractResult, error) {
+func (s *Service) ParseSignContractCallback(body []byte) (*SignContractResult, error) {
 	// Verify and decrypt the notification
 	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
 	if err != nil {

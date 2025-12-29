@@ -91,7 +91,7 @@ Contact ServiceShare operations team for production URL.
 **Balance Query (FunCode: 6003)**
 ```go
 accountService := accounts.NewService(client)
-resp, err := accountService.QueryBalance(&accounts.BalanceQueryRequest{
+resp, err := accountService.BalanceQuery(&accounts.BalanceQueryRequest{
     ProviderID:  123456789, // int64
     PaymentType: cores.PaymentTypeBankCard, // Optional
 })
@@ -118,7 +118,7 @@ resp, err := freelancerService.SignContract(&freelancers.SignContractRequest{
 
 **Contract Status Query (FunCode: 6011)**
 ```go
-resp, err := freelancerService.QuerySign(&freelancers.SignQueryRequest{
+resp, err := freelancerService.SignContractQuery(&freelancers.SignQueryRequest{
     Name:       "张三",
     IdCard:     "110101199001011234",
     Mobile:     "13800138000",
@@ -169,7 +169,7 @@ The SDK provides helpers to handle asynchronous callbacks from the platform.
 ```go
 // In your HTTP handler
 body, _ := io.ReadAll(r.Body)
-callback, err := freelancerService.ParseSignCallback(body)
+callback, err := freelancerService.ParseSignContractCallback(body)
 if err != nil {
     // Handle error
     return
@@ -181,7 +181,7 @@ fmt.Printf("Sign Result: Name=%s State=%d\n", callback.Name, callback.State)
 ```go
 // In your HTTP handler
 body, _ := io.ReadAll(r.Body)
-callback, err := paymentService.ParseBatchPaymentCallback(body)
+callback, err := paymentService.ParsePaymentCallback(body)
 if err != nil {
     // Handle error
     return
@@ -192,7 +192,7 @@ fmt.Printf("Batch Payment: BatchID=%s Items=%d\n", callback.MerBatchId, len(call
 ## Error Handling
 
 ```go
-resp, err := accountService.QueryBalance(req)
+resp, err := accountService.BalanceQuery(req)
 if err != nil {
     if apiErr, ok := err.(*cores.APIError); ok {
         // API error with Code and Message

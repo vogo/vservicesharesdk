@@ -51,7 +51,7 @@ func TestCallback(t *testing.T) {
 		}
 
 		// Parse callback
-		callback, err := freelancerService.ParseSignCallback(body)
+		callback, err := freelancerService.ParseSignContractCallback(body)
 		if err != nil {
 			log.Printf("Failed to parse sign callback: %v", err)
 			w.Header().Set("Content-Type", "application/json")
@@ -88,7 +88,7 @@ func TestCallback(t *testing.T) {
 		}
 
 		// Parse callback
-		callback, err := paymentService.ParseBatchPaymentCallback(body)
+		callback, err := paymentService.ParsePaymentCallback(body)
 		if err != nil {
 			log.Printf("failed to parse payment callback | err: %v", err)
 			w.Header().Set("Content-Type", "application/json")

@@ -44,8 +44,8 @@ type BalanceQueryResponse struct {
 	ProviderID int64 `json:"providerId"`
 }
 
-// QueryBalance queries the merchant account balance.
-func (s *Service) QueryBalance(req *BalanceQueryRequest) (*BalanceQueryResponse, error) {
+// BalanceQuery queries the merchant account balance.
+func (s *Service) BalanceQuery(req *BalanceQueryRequest) (*BalanceQueryResponse, error) {
 	// Validate request
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")

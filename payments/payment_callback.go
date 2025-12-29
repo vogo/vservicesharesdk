@@ -22,9 +22,9 @@ import (
 	"fmt"
 )
 
-// ParseBatchPaymentCallback parses and validates the batch payment callback request.
+// ParsePaymentCallback parses and validates the batch payment callback request.
 // It takes the raw JSON body of the callback request.
-func (s *Service) ParseBatchPaymentCallback(body []byte) (*PaymentBatchResult, error) {
+func (s *Service) ParsePaymentCallback(body []byte) (*PaymentBatchResult, error) {
 	// Verify and decrypt the notification
 	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
 	if err != nil {

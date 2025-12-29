@@ -35,7 +35,7 @@ func TestBalanceQuery(t *testing.T) {
 	accountService := accounts.NewService(client)
 
 	// Query balance
-	resp, err := accountService.QueryBalance(&accounts.BalanceQueryRequest{
+	resp, err := accountService.BalanceQuery(&accounts.BalanceQueryRequest{
 		ProviderID:  vos.EnvInt64("SS_PROVIDER_ID"),
 		PaymentType: cores.PaymentTypeBankCard, // Optional: 0=Bank, 1=Alipay, 2=WeChat
 	})
