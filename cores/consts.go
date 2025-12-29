@@ -27,11 +27,16 @@ const (
 	PaymentTypeWeChat   PaymentType = "2" // WeChat payment
 )
 
+type FunCode struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
 // Function codes
-const (
-	FunCodeBatchPayment      = "6001" // function code for batch payment
-	FunCodeBatchPaymentQuery = "6002" // function code for batch payment query
-	FunCodeBalanceQuery      = "6003" // function code for balance query
-	FunCodeSilentSign        = "6010" // function code for silent contract signing
-	FunCodeSignQuery         = "6011" // function code for contract status query
+var (
+	FunCodeBatchPayment      = &FunCode{Code: "6001", Name: "batch_payment"}       // function code for batch payment
+	FunCodeBatchPaymentQuery = &FunCode{Code: "6002", Name: "batch_payment_query"} // function code for batch payment query
+	FunCodeBalanceQuery      = &FunCode{Code: "6003", Name: "balance_query"}       // function code for balance query
+	FunCodeSilentSign        = &FunCode{Code: "6010", Name: "silent_sign"}         // function code for silent contract signing
+	FunCodeSignQuery         = &FunCode{Code: "6011", Name: "sign_query"}          // function code for contract status query
 )

@@ -32,10 +32,10 @@ import (
 
 // Client represents the ServiceShare API client.
 type Client struct {
-	config     *Config
-	httpClient *http.Client
-	privateKey *rsa.PrivateKey
-	publicKey  *rsa.PublicKey
+	config            *Config
+	httpClient        *http.Client
+	privateKey        *rsa.PrivateKey
+	platformPublicKey *rsa.PublicKey
 }
 
 // NewClient creates a new ServiceShare API client.
@@ -52,7 +52,7 @@ func NewClient(config *Config) (*Client, error) {
 	}
 
 	// Parse platform public key
-	publicKey, err := ParsePublicKey(config.PlatformPublicKey)
+	platformPublicKey, err := ParsePublicKey(config.PlatformPublicKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse platform public key: %w", err)
 	}
@@ -63,10 +63,10 @@ func NewClient(config *Config) (*Client, error) {
 	}
 
 	return &Client{
-		config:     config,
-		httpClient: httpClient,
-		privateKey: privateKey,
-		publicKey:  publicKey,
+		config:            config,
+		httpClient:        httpClient,
+		privateKey:        privateKey,
+		platformPublicKey: platformPublicKey,
 	}, nil
 }
 
@@ -79,7 +79,7 @@ func (c *Client) generateRequestID() string {
 
 // Do executes an API request with encryption and signing.
 // Returns decrypted response data as JSON string.
-func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
+func (c *Client) Do(funCode *FunCode, reqData interface{}) (string, error) {
 	// 1. Generate unique request ID
 	reqId := c.generateRequestID()
 
@@ -90,8 +90,8 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 	}
 	reqDataString := string(reqDataJSON)
 
-	vlog.Infof("service share api request | merchantId: %s | funCode: %s | reqId: %s  | url: %s | reqData: %s",
-		c.config.MerchantID, funCode, reqId, c.config.BaseURL, reqDataString)
+	vlog.Infof("service share api request | merchantId: %s | funCode: %s(%s) | reqId: %s  | url: %s | reqData: %s",
+		c.config.MerchantID, funCode.Code, funCode.Name, reqId, c.config.BaseURL, reqDataString)
 
 	// 3. Encrypt request data with DES
 	encryptedData, err := EncryptDES(reqDataString, c.config.DesKey)
@@ -102,7 +102,7 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 	// 4. Create request message
 	requestMsg := &RequestMessage{
 		ReqId:   reqId,
-		FunCode: funCode,
+		FunCode: funCode.Code,
 		MerId:   c.config.MerchantID,
 		Version: c.config.Version,
 		ReqData: encryptedData,
@@ -144,20 +144,20 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 
 	// Check HTTP status
 	if resp.StatusCode != http.StatusOK {
-		vlog.Errorf("service share api response not ok | merchantId: %s | funCode: %s | reqId: %s | status_code: %d | respBody: %s",
-			c.config.MerchantID, funCode, reqId, resp.StatusCode, string(respBody))
+		vlog.Errorf("service share api response not ok | merchantId: %s | funCode: %s(%s) | reqId: %s | status_code: %d | respBody: %s",
+			c.config.MerchantID, funCode.Code, funCode.Name, reqId, resp.StatusCode, string(respBody))
 
 		return "", fmt.Errorf("%w: HTTP %d", ErrRequestFailed, resp.StatusCode)
 	}
 
-	vlog.Infof("service share api response | merchantId: %s | funCode: %s | reqId: %s | respBody: %s",
-		c.config.MerchantID, funCode, reqId, string(respBody))
+	vlog.Infof("service share api response | merchantId: %s | funCode: %s(%s) | reqId: %s | respBody: %s",
+		c.config.MerchantID, funCode.Code, funCode.Name, reqId, string(respBody))
 
 	// 9. Parse response message
 	responseMsg, err := ParseResponseMessage(respBody)
 	if err != nil {
-		vlog.Errorf("service share api response parse failed | merchantId: %s | funCode: %s | reqId: %s | respBody: %s | err: %v",
-			c.config.MerchantID, funCode, reqId, string(respBody), err)
+		vlog.Errorf("service share api response parse failed | merchantId: %s | funCode: %s(%s) | reqId: %s | respBody: %s | err: %v",
+			c.config.MerchantID, funCode.Code, funCode.Name, reqId, string(respBody), err)
 
 		return "", fmt.Errorf("%w: %v", ErrInvalidResponse, err)
 	}
@@ -169,7 +169,7 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 
 	// 11. Verify response signature (if present)
 	if responseMsg.Sign != "" && responseMsg.ResData != "" {
-		if verifyErr := Verify(responseMsg.ResData, responseMsg.Sign, c.publicKey); verifyErr != nil {
+		if verifyErr := Verify(responseMsg.ResData, responseMsg.Sign, c.platformPublicKey); verifyErr != nil {
 			return "", fmt.Errorf("response signature verification failed: %w", verifyErr)
 		}
 	}
@@ -184,7 +184,8 @@ func (c *Client) Do(funCode string, reqData interface{}) (string, error) {
 		return "", fmt.Errorf("failed to decrypt response data: %w", decryptErr)
 	}
 
-	vlog.Infof("service share api response decrypt | funCode: %s | reqId: %s | decryptedData: %s", funCode, reqId, decryptedData)
+	vlog.Infof("service share api response decrypt | funCode: %s(%s) | reqId: %s | decryptedData: %s",
+		funCode.Code, funCode.Name, reqId, decryptedData)
 
 	return decryptedData, nil
 }
@@ -203,9 +204,10 @@ func (c *Client) VerifyAndDecryptNotification(body []byte) (string, error) {
 	if reqMsg.Sign == "" {
 		return "", fmt.Errorf("missing signature in notification")
 	}
+
 	// Note: The signature is generated based on the encrypted ReqData
-	if err := Verify(reqMsg.ReqData, reqMsg.Sign, c.publicKey); err != nil {
-		return "", fmt.Errorf("notification signature verification failed: %w", err)
+	if err := Verify(reqMsg.ReqData, reqMsg.Sign, c.platformPublicKey); err != nil {
+		return "", err
 	}
 
 	// 3. Decrypt data
@@ -215,7 +217,7 @@ func (c *Client) VerifyAndDecryptNotification(body []byte) (string, error) {
 
 	decryptedData, err := DecryptDES(reqMsg.ReqData, c.config.DesKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to decrypt notification data: %w", err)
+		return "", err
 	}
 
 	return decryptedData, nil

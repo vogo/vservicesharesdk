@@ -30,7 +30,7 @@ func (s *Service) ParseSignCallback(body []byte) (*SignResult, error) {
 	// Verify and decrypt the notification
 	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to verify and decrypt callback: %w", err)
+		return nil, err
 	}
 
 	vlog.Infof("service share contract sign callback | data: %s", decryptedData)

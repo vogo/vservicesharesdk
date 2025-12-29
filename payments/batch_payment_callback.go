@@ -28,7 +28,7 @@ func (s *Service) ParseBatchPaymentCallback(body []byte) (*BatchPaymentResult, e
 	// Verify and decrypt the notification
 	decryptedData, err := s.client.VerifyAndDecryptNotification(body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to verify and decrypt callback: %w", err)
+		return nil, err
 	}
 
 	if decryptedData == "" {
