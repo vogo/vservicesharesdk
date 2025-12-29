@@ -21,6 +21,7 @@ package payments
 type PaymentState int
 
 const (
+	PaymentStateInit           PaymentState = 0 // indicates the payment is initialised, wait to process
 	PaymentStateProcessing     PaymentState = 1 // indicates the payment is being processed
 	PaymentStateSuccess        PaymentState = 3 // indicates the payment succeeded
 	PaymentStateFailed         PaymentState = 4 // indicates the payment failed
