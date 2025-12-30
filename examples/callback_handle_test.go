@@ -97,11 +97,7 @@ func TestCallback(t *testing.T) {
 		}
 
 		fmt.Printf("Received Payment Callback:\n")
-		fmt.Printf("Batch ID: %s\n", callback.MerBatchId)
-		fmt.Printf("Items Count: %d\n", len(callback.QueryItems))
-		for i, item := range callback.QueryItems {
-			fmt.Printf("  Item %d: OrderNo=%d Amt=%d State=%d\n", i+1, item.OrderNo, item.Amt, item.State)
-		}
+		fmt.Printf("  OrderNo=%d Amt=%d State=%d\n", callback.OrderNo, callback.Amt, callback.State)
 
 		// Return success response
 		w.Header().Set("Content-Type", "application/json")
