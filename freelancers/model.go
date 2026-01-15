@@ -17,14 +17,18 @@
 
 package freelancers
 
+import "github.com/vogo/vservicesharesdk/cores"
+
 // SignContractResult represents the result of sign.
 type SignContractResult struct {
-	Name       string    `json:"name"`             // the freelancer's name
-	CardNo     string    `json:"cardNo"`           // the bank card number or payment account
-	IdCard     string    `json:"idCard"`           // the ID card number
-	Mobile     string    `json:"mobile"`           // the phone number registered with bank
-	State      SignState `json:"state"`            // the sign status
-	OtherParam string    `json:"otherParam"`       // other parameters
-	ProviderId int64     `json:"providerId"`       // the service provider ID
-	RetMsg     string    `json:"retMsg,omitempty"` // the failure reason if applicable
+	Name            string              `json:"name"`                      // the freelancer's name
+	CardNo          string              `json:"cardNo"`                    // the bank card number or payment account
+	IdCard          string              `json:"idCard"`                    // the ID card number
+	Mobile          string              `json:"mobile"`                    // the phone number registered with bank
+	State           SignState           `json:"state"`                     // the sign status
+	OtherParam      string              `json:"otherParam"`                // other parameters
+	ProviderId      int64               `json:"providerId"`                // the service provider ID
+	RetMsg          string              `json:"retMsg,omitempty"`          // the failure reason if applicable
+	FaceAuthState   cores.FaceAuthState `json:"faceAuthState,omitempty"`   // the face auth status (UN_AUTH/PROCESS/SUCCESS/FAILED/EXPIRED)
+	FaceAuthEndTime string              `json:"faceAuthEndTime,omitempty"` // the face auth expiration date (YYYY-MM-DD)
 }

@@ -64,4 +64,6 @@ func TestSignQuery(t *testing.T) {
 	if resp.RetMsg != "" {
 		fmt.Printf("  Message: %s\n", resp.RetMsg)
 	}
+	fmt.Printf("  Face Auth State: %s\n", resp.FaceAuthState)
+	fmt.Printf("  Face Auth End Time: %s\n", resp.FaceAuthEndTime)
 }

@@ -10,6 +10,8 @@ Go SDK for ServiceShare (佣金保) API integration.
   - Account balance query (6003)
   - Freelancer silent contract signing (6010)
   - Freelancer contract status query (6011)
+  - Freelancer face authentication (6009)
+  - Sync face authentication record (6008)
   - Merchant batch payment (6001)
   - Batch payment status query (6002)
 - Flexible key formats: PEM or raw base64
@@ -127,6 +129,50 @@ resp, err := freelancerService.SignContractQuery(&freelancers.SignQueryRequest{
 // resp.State: 0=unsigned, 1=signed, 2=not found, 3=pending, 4=failed, 5=cancelled
 ```
 
+**Face Authentication (FunCode: 6009)**
+```go
+resp, err := freelancerService.FaceAuth(&freelancers.FaceAuthRequest{
+    Name:            "张三",
+    IdCard:          "110101199001011234",
+    Mobile:          "13800138000",
+    RedirectUrl:     "https://example.com/callback", // Optional
+    RedirectBtnName: "返回",                          // Optional
+})
+// resp.Url: H5 page URL for face recognition (valid for one day)
+// Requires the user to have a successfully signed contract
+```
+
+**Sync Face Authentication Record (FunCode: 6008)**
+```go
+resp, err := freelancerService.SyncFaceAuth(&freelancers.SyncFaceAuthRequest{
+    Name:        "张三",
+    IdCard:      "110101199001011234",
+    Mobile:      "13800138000",
+    ThirdId:     "UNIQUE_TRACE_CODE_001",
+    AuthTime:    "2024-01-15 10:30:00",
+    Urls:        []string{"https://example.com/face_photo.jpg"},
+    AuthChannel: cores.AuthChannelAlipay, // See AuthChannel constants
+})
+// resp.FaceAuthEndTime: Face authentication expiration date (format: YYYY-MM-DD)
+// Error code 6323 means face auth record already exists
+```
+
+**AuthChannel Constants:**
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `AuthChannelBaidu` | "01" | 百度云 |
+| `AuthChannelAliyun` | "02" | 阿里云 |
+| `AuthChannelTencent` | "03" | 腾讯云 |
+| `AuthChannelFadada` | "04" | 法大大 |
+| `AuthChannelAlipay` | "05" | 支付宝 |
+| `AuthChannelVolcano` | "06" | 火山引擎 |
+| `AuthChannelHuawei` | "07" | 华为云 |
+| `AuthChannelSensetime` | "08" | 商汤科技 |
+| `AuthChannelMegvii` | "09" | 旷世Face++ |
+| `AuthChannelJDCloud` | "10" | 京东智联云 |
+| `AuthChannelWechatPay` | "11" | 微信支付 |
+| `AuthChannelOther` | "12" | 其他活体通道 |
+
 ### Payments Service
 
 **Batch Payment (FunCode: 6001)**
@@ -234,7 +280,7 @@ vservicesharesdk/
 │   ├── consts.go   # Constants (PaymentType, etc.)
 │   └── errors.go   # Error types
 ├── accounts/       # Account service APIs (balance query)
-├── freelancers/    # Freelancer APIs (signing, contract query)
+├── freelancers/    # Freelancer APIs (signing, contract query, face auth)
 ├── payments/       # Payment APIs (batch payment, query)
 └── examples/       # Usage examples with common helper
 ```
