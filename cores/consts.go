@@ -58,6 +58,23 @@ const (
 	FaceAuthStateExpired FaceAuthState = "EXPIRED" // 认证过期
 )
 
+func (s FaceAuthState) Desc() string {
+	switch s {
+	case FaceAuthStateUnAuth:
+		return "未认证"
+	case FaceAuthStateProcess:
+		return "认证中"
+	case FaceAuthStateSuccess:
+		return "认证成功"
+	case FaceAuthStateFailed:
+		return "认证失败"
+	case FaceAuthStateExpired:
+		return "认证过期"
+	default:
+		return "未知状态"
+	}
+}
+
 type FunCode struct {
 	Code string `json:"code"`
 	Name string `json:"name"`
