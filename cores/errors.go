@@ -136,4 +136,5 @@ var (
 	ErrApiSettleTimeError              = NewAPIError("6104", "当前时间不可结算,请稍后重试")
 	ErrApiSignTimeError                = NewAPIError("6105", "当前时间不可签约,请稍后重试")
 	ErrApiNoElectronicReceipt          = NewAPIError("6220", "暂无电子回单")
+	ErrApiFaceAuthRecordExists         = NewAPIError("6323", "已存在人脸认证记录")
 )
