@@ -20,6 +20,7 @@ package freelancers
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/vogo/vservicesharesdk/cores"
 )
@@ -38,6 +39,10 @@ type SyncFaceAuthRequest struct {
 // SyncFaceAuthResponse represents the response for syncing face recognition record.
 type SyncFaceAuthResponse struct {
 	FaceAuthEndTime string `json:"faceAuthEndTime,omitempty"` // the face authentication expiration date (format: YYYY-MM-DD)
+}
+
+func (s SyncFaceAuthResponse) GetFaceAuthEndTime() *time.Time {
+	return convertFaceAuthEndTime(s.FaceAuthEndTime)
 }
 
 // SyncFaceAuth syncs a face recognition record for a freelancer.

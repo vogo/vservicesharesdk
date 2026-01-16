@@ -17,7 +17,12 @@
 
 package freelancers
 
-import "github.com/vogo/vservicesharesdk/cores"
+import (
+	"time"
+
+	"github.com/vogo/vogo/vlog"
+	"github.com/vogo/vservicesharesdk/cores"
+)
 
 // SignContractResult represents the result of sign.
 type SignContractResult struct {
@@ -31,4 +36,22 @@ type SignContractResult struct {
 	RetMsg          string              `json:"retMsg,omitempty"`          // the failure reason if applicable
 	FaceAuthState   cores.FaceAuthState `json:"faceAuthState,omitempty"`   // the face auth status (UN_AUTH/PROCESS/SUCCESS/FAILED/EXPIRED)
 	FaceAuthEndTime string              `json:"faceAuthEndTime,omitempty"` // the face auth expiration date (YYYY-MM-DD)
+}
+
+func (s SignContractResult) GetFaceAuthEndTime() *time.Time {
+	return convertFaceAuthEndTime(s.FaceAuthEndTime)
+}
+
+func convertFaceAuthEndTime(s string) *time.Time {
+	if s == "" {
+		return nil
+	}
+
+	t, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		vlog.Errorf("failed to parse face auth end time | faceAuthEndTime: %s | err: %v", s, err)
+		return nil
+	}
+
+	return &t
 }

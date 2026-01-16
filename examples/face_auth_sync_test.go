@@ -52,5 +52,5 @@ func TestSyncFaceAuth(t *testing.T) {
 	}
 
 	fmt.Printf("Sync Face Auth Result:\n")
-	fmt.Printf("  FaceAuthEndTime: %s\n", resp.FaceAuthEndTime)
+	fmt.Printf("  FaceAuthEndTime: %v\n", resp.GetFaceAuthEndTime())
 }
